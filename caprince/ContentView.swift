@@ -8,13 +8,16 @@
 import SwiftUI
 
 struct ContentView: View {
-    @Binding var document: caprinceDocument
-
     var body: some View {
-        TextEditor(text: $document.text)
+        TabView {
+            MapView()
+                .tabItem {
+                    Label("Map", systemImage: "map")
+                }
+        }
     }
 }
 
 #Preview {
-    ContentView(document: .constant(caprinceDocument()))
+    ContentView()
 }
