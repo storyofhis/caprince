@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct caprinceApp: App {
@@ -13,5 +14,6 @@ struct caprinceApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: RunSession.self)
     }
 }

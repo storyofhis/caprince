@@ -8,12 +8,19 @@
 import SwiftUI
 import MapKit
 import Combine
+import SwiftData
+
+enum RunState {
+    case idle
+    case running
+    case paused
+}
 
 final class MapViewModel: ObservableObject {
     
     @Published var cameraPosition: MapCameraPosition = .automatic
     @Published var route: [CLLocationCoordinate2D] = []
-    @Published var isTracking = false
+    @Published var runState: RunState = .idle
     
     private let locationService = LocationService()
     private var cancellables = Set<AnyCancellable>()
@@ -22,8 +29,7 @@ final class MapViewModel: ObservableObject {
     @Published var elapsedTime: TimeInterval = 0
 
     private var timer: AnyCancellable?
-    private var startTime: Date?
-    private var endTime: Date?
+    private var lastUpdateDate: Date?
     
     init() {
         bindLocation()
@@ -37,11 +43,16 @@ final class MapViewModel: ObservableObject {
     }
     
     private func startTimer() {
+        lastUpdateDate = Date()
         timer = Timer.publish(every: 1, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
-                guard let self = self, let start = self.startTime else { return }
-                self.elapsedTime = Date().timeIntervalSince(start)
+                guard let self = self else { return }
+                let now = Date()
+                if self.runState == .running, let last = self.lastUpdateDate {
+                    self.elapsedTime += now.timeIntervalSince(last)
+                }
+                self.lastUpdateDate = now
             }
     }
     
@@ -53,7 +64,7 @@ final class MapViewModel: ObservableObject {
     private func bindLocation() {
         locationService.$locations
             .sink { [weak self] locations in
-                guard let self = self, self.isTracking else { return }
+                guard let self = self, self.runState == .running else { return }
                 
                 guard let last = locations.last,
                       last.horizontalAccuracy < 20 else { return }
@@ -90,24 +101,40 @@ final class MapViewModel: ObservableObject {
     }
     
     func startTracking() {
-        guard !isTracking else { return }
+        guard runState == .idle else { return }
         
         route.removeAll()
-        isTracking = true
+        runState = .running
         elapsedTime = 0
-        startTime = Date()
         
-        locationService.start()   // ✅ NOT requestLocation()
+        locationService.start()
         startTimer()
     }
+    
+    func pauseTracking() {
+        guard runState == .running else { return }
+        runState = .paused
+    }
+    
+    func resumeTracking() {
+        guard runState == .paused else { return }
+        lastUpdateDate = Date() // Reset update date so we don't jump time
+        runState = .running
+    }
 
-    func stopTracking() {
-        guard isTracking else { return }
+    func finishTracking(context: ModelContext) {
+        guard runState != .idle else { return }
         
-        isTracking = false
-        endTime = Date()
+        let session = RunSession(
+            duration: elapsedTime,
+            distance: totalDistance() / 1000.0,
+            averagePace: averagePace()
+        )
+        context.insert(session)
+        try? context.save()
         
-        locationService.stop()    // ✅ IMPORTANT
+        runState = .idle
+        locationService.stop()
         stopTimer()
     }
     
@@ -125,5 +152,20 @@ final class MapViewModel: ObservableObject {
             let end = CLLocation(latitude: pair.1.latitude, longitude: pair.1.longitude)
             return result + start.distance(from: end)
         }
+    }
+    
+    func averagePace() -> String {
+        let distanceKm = totalDistance() / 1000.0
+        guard distanceKm > 0.01 else { return "0'00\"" } // Prevent weird numbers if distance is tiny
+        
+        let totalMinutes = elapsedTime / 60.0
+        let paceMinutes = totalMinutes / distanceKm
+        
+        guard paceMinutes < 60 else { return "59'59\"" } // Cap pace if extremely slow
+        
+        let min = Int(paceMinutes)
+        let sec = Int((paceMinutes - Double(min)) * 60.0)
+        
+        return String(format: "%d'%02d\"", min, sec)
     }
 }
