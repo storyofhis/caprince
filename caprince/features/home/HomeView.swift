@@ -7,25 +7,72 @@
 
 import SwiftUI
 
-struct TrainingPlan: Identifiable {
+struct TrainingDay: Identifiable {
     let id = UUID()
     let title: String
-    let description: String
-    let icon: String
-    let color: Color
+    let duration: String
+}
+
+struct TrainingWeek: Identifiable {
+    let id = UUID()
+    let title: String
+    let days: [TrainingDay]
 }
 
 struct HomeView: View {
     @State private var selectedTab = "Beginner 5K"
-    private let tabs = ["Beginner 5K", "10K Prep", "Half Marathon"]
+    private let tabs = ["Beginner 5K"]
     
-    private let beginnerPlans = [
-        TrainingPlan(title: "Week 1: Easy Start", description: "3x 20 min walk/run", icon: "figure.run", color: .green),
-        TrainingPlan(title: "Week 2: Building Base", description: "3x 25 min steady run", icon: "bolt.fill", color: .green),
-        TrainingPlan(title: "Week 3: Push Further", description: "1x 30 min, 2x 20 min", icon: "flame.fill", color: .orange),
-        TrainingPlan(title: "Week 4: Race Ready", description: "1x 5k run", icon: "flag.checkered", color: .red)
+    private let beginnerPlans: [TrainingWeek] = [
+        TrainingWeek(
+            title: "Week 1",
+            days: [
+                TrainingDay(title: "Day 1", duration: "20 min walk/run"),
+                TrainingDay(title: "Day 2", duration: "20 min walk/run"),
+                TrainingDay(title: "Day 3", duration: "20 min walk/run")
+            ]
+        ),
+        TrainingWeek(
+            title: "Week 2",
+            days: [
+                TrainingDay(title: "Day 1", duration: "22 min"),
+                TrainingDay(title: "Day 2", duration: "22 min"),
+                TrainingDay(title: "Day 3", duration: "22 min")
+            ]
+        ),
+        TrainingWeek(
+            title: "Week 3",
+            days: [
+                TrainingDay(title: "Day 1", duration: "22 min"),
+                TrainingDay(title: "Day 2", duration: "22 min"),
+                TrainingDay(title: "Day 3", duration: "22 min")
+            ]
+        ),
+        TrainingWeek(
+            title: "Week 4",
+            days: [
+                TrainingDay(title: "Day 1", duration: "22 min"),
+                TrainingDay(title: "Day 2", duration: "22 min"),
+                TrainingDay(title: "Day 3", duration: "22 min")
+            ]
+        ),
+        TrainingWeek(
+            title: "Week 5",
+            days: [
+                TrainingDay(title: "Day 1", duration: "22 min"),
+                TrainingDay(title: "Day 2", duration: "22 min"),
+                TrainingDay(title: "Day 3", duration: "22 min")
+            ]
+        ),
+        TrainingWeek(
+            title: "Week 6",
+            days: [
+                TrainingDay(title: "Day 1", duration: "22 min"),
+                TrainingDay(title: "Day 2", duration: "22 min"),
+                TrainingDay(title: "Day 3", duration: "22 min")
+            ]
+        )
     ]
-    
     var body: some View {
         VStack(spacing: 0) {
             // Header
@@ -60,30 +107,37 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     ForEach(beginnerPlans) { plan in
-                        HStack(spacing: 16) {
-                            ZStack {
-                                Circle()
-                                    .fill(plan.color.opacity(0.2))
-                                    .frame(width: 50, height: 50)
-                                Image(systemName: plan.icon)
-                                    .foregroundColor(plan.color)
-                                    .font(.title3)
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(plan.title)
-                                    .font(.headline)
-                                Text(plan.description)
-                                    .font(.subheadline)
+                        NavigationLink(destination: WeekDetailView(week: plan)) {
+                            HStack(spacing: 16) {
+                                
+                                // Simple icon (static for now)
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.orange.opacity(0.2))
+                                        .frame(width: 50, height: 50)
+                                    Image(systemName: "calendar")
+                                        .foregroundColor(.orange)
+                                        .font(.title3)
+                                }
+                                
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(plan.title)
+                                        .font(.headline)
+                                    
+                                    Text("\(plan.days.count) workouts this week")
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                }
+                                
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
                                     .foregroundColor(.gray)
                             }
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.gray)
+                            .padding()
+                            .background(Color(UIColor.secondarySystemBackground))
+                            .cornerRadius(16)
                         }
-                        .padding()
-                        .background(Color(UIColor.secondarySystemBackground))
-                        .cornerRadius(16)
                     }
                 }
                 .padding(.horizontal)
