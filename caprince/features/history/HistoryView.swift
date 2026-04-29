@@ -16,9 +16,15 @@ struct HistoryView: View {
         NavigationStack {
             List {
                 if runs.isEmpty {
-                    Text("No runs yet. Go for a run!")
-                        .foregroundColor(.gray)
-                        .listRowBackground(Color.clear)
+                    VStack(alignment: .center, spacing: 12) {
+                        Image(systemName: "figure.walk")
+                            .font(.system(size: 40))
+                            .foregroundColor(.gray)
+                        Text("No runs yet. Go for a run!")
+                            .foregroundColor(.gray)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .listRowBackground(Color.clear)
                 } else {
                     ForEach(runs) { run in
                         VStack(alignment: .leading, spacing: 8) {
@@ -62,6 +68,9 @@ struct HistoryView: View {
                         dismiss()
                     }
                 }
+            }
+            .onAppear {
+                print("📊 HistoryView appeared. Total runs: \(runs.count)")
             }
         }
     }

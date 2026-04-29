@@ -14,6 +14,8 @@ struct MapView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @State private var showHistory = false
+    @State private var showFinishMessage = false
+    @State private var finishTimer: Timer?
     
     var body: some View {
         ZStack {
@@ -161,6 +163,11 @@ struct MapView: View {
                         
                         Button(action: {
                             viewModel.finishTracking(context: modelContext)
+                            showFinishMessage = true
+                            // Auto-dismiss after 2 seconds
+                            finishTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { _ in
+                                dismiss()
+                            }
                         }) {
                             Text("FINISH")
                                 .font(.headline)
@@ -174,6 +181,55 @@ struct MapView: View {
                     }
                 }
                 .padding(.bottom, 40)
+            }
+            
+            // Success message
+            if showFinishMessage {
+                VStack(spacing: 16) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 50))
+                        .foregroundColor(.green)
+                    
+                    VStack(spacing: 4) {
+                        Text("Run Saved!")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        Text("Your run has been added to history")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                    
+                    HStack(spacing: 12) {
+                        Button(action: {
+                            finishTimer?.invalidate()
+                            dismiss()
+                        }) {
+                            Text("Back Home")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .background(Color.orange)
+                                .cornerRadius(8)
+                        }
+                        
+                        Button(action: {
+                            showHistory = true
+                        }) {
+                            Text("View History")
+                                .font(.headline)
+                                .foregroundColor(.orange)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .background(Color.orange.opacity(0.1))
+                                .cornerRadius(8)
+                        }
+                    }
+                }
+                .padding(32)
+                .background(Color(UIColor.systemBackground))
+                .cornerRadius(20)
+                .shadow(radius: 10)
             }
         }
         .sheet(isPresented: $showHistory) {

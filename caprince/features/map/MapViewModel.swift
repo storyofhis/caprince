@@ -130,12 +130,21 @@ final class MapViewModel: ObservableObject {
             distance: totalDistance() / 1000.0,
             averagePace: averagePace()
         )
-        context.insert(session)
-        try? context.save()
         
+        do {
+            context.insert(session)
+            try context.save()
+            print("✅ Run saved successfully")
+        } catch {
+            print("❌ Error saving run: \(error.localizedDescription)")
+        }
+        
+        // Reset state
         runState = .idle
         locationService.stop()
         stopTimer()
+        route.removeAll()
+        elapsedTime = 0
     }
     
     func recenter() {
