@@ -28,89 +28,124 @@ struct HomeView: View {
     @State private var showHistory = false
     @State private var beginnerPlans = RunningPlan.beginnerPlans
     
+    var overallProgress: CGFloat {
+        let totalDays = beginnerPlans.flatMap { $0.days }.count
+        let completedDays = beginnerPlans.flatMap { $0.days }.filter { $0.isCompleted }.count
+        return totalDays > 0 ? CGFloat(completedDays) / CGFloat(totalDays) : 0
+    }
+    
     var body: some View {
-        VStack(spacing: 0) {
-            // Header
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Welcome Back!")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                    Text("Ready to train?")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                }
-                Spacer()
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .frame(width: 50, height: 50)
-                    .foregroundColor(.orange)
-            }
-            .padding(.horizontal)
-            .padding(.top)
-            
-            // Segmented Control
-            Picker("Training Plan", selection: $selectedTab) {
-                ForEach(tabs, id: \.self) { tab in
-                    Text(tab)
-                }
-            }
-            .pickerStyle(SegmentedPickerStyle())
-            .padding()
-            
-            // Training Plan List
-            ScrollView {
-                VStack(spacing: 16) {
-                    ForEach(beginnerPlans) { plan in
-                        HStack(spacing: 16) {
-                            ZStack {
-                                Circle()
-                                    .fill(plan.color.opacity(0.2))
-                                    .frame(width: 50, height: 50)
-                                Image(systemName: plan.icon)
-                                    .foregroundColor(plan.color)
-                                    .font(.title3)
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(plan.title)
-                                    .font(.headline)
-                                Text(plan.description)
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-                            }
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.gray)
-                        }
-                        .padding()
-                        .background(Color(UIColor.secondarySystemBackground))
-                        .cornerRadius(16)
+        ZStack {
+            // Main content
+            VStack(spacing: 0) {
+                // Header
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Welcome To Caprince")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                        Text("Ready to train?")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                    }
+                    Spacer()
+                    Button(action: { showHistory = true }) {
+                        Image(systemName: "list.bullet.rectangle.portrait")
+                            .font(.title2)
+                            .foregroundColor(.primary)
                     }
                 }
                 .padding(.horizontal)
-            }
-            
-            // Start Run Button
-            VStack {
-                NavigationLink(destination: MapView()) {
+                .padding(.top)
+                
+                // Progress Bar
+                VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Image(systemName: "play.fill")
-                        Text("FREE RUN")
+                        Text("Progress")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(.gray)
+                        Spacer()
+                        Text("\(Int(overallProgress * 100))%")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(.orange)
                     }
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(Color.orange)
-                    .cornerRadius(16)
-                    .shadow(color: .orange.opacity(0.3), radius: 10, y: 5)
+                    
+                    ZStack(alignment: .leading) {
+                        Capsule()
+                            .fill(Color.gray.opacity(0.2))
+                            .frame(height: 8)
+                        
+                        Capsule()
+                            .fill(Color.orange)
+                            .frame(width: 300 * overallProgress, height: 8)
+                            .animation(.easeInOut, value: overallProgress)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 12)
+                
+                // Segmented Control
+                Picker("Training Plan", selection: $selectedTab) {
+                    ForEach(tabs, id: \.self) { tab in
+                        Text(tab)
+                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding()
+            
+                // Training Plan List
+                ScrollView {
+                    VStack(spacing: 16) {
+                        ForEach($beginnerPlans) { $plan in
+                            WeekCardView(
+                                week: $plan,
+                                selectedDay: $selectedDay
+                            )
+                        }
+                    }
+                    .padding(.horizontal)
                 }
             }
-            .padding()
+            
+            // Overlay when day is selected
+            if let day = selectedDay {
+                ZStack {
+                    // Background dim - fully opaque to hide everything behind
+                    Color.black.opacity(0.85)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            selectedDay = nil
+                        }
+                    
+                    // Center popup
+                    WorkoutDetailSheet(day: day) {
+                        // Mark day as completed and navigate
+                        for i in 0..<beginnerPlans.count {
+                            if let dayIndex = beginnerPlans[i].days.firstIndex(where: { $0.id == day.id }) {
+                                beginnerPlans[i].days[dayIndex].isCompleted = true
+                            }
+                        }
+                        navigateToMap = true
+                        selectedDay = nil
+                    }
+                    .frame(maxWidth: 300, maxHeight: 280)
+                    .background(Color(UIColor.systemBackground))
+                    .cornerRadius(16)
+                    .shadow(radius: 20)
+                }
+                .transition(.opacity)
+                .animation(.easeInOut, value: selectedDay != nil)
+            }
         }
         .navigationBarHidden(true)
+        .navigationDestination(isPresented: $navigateToMap) {
+            MapView()
+        }
+        .sheet(isPresented: $showHistory) {
+            HistoryView()
+        }
     }
 }
 
