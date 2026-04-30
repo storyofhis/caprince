@@ -25,27 +25,10 @@ struct WeekCardView: View {
             
             ZStack {
                 
-                // Line
-                GeometryReader { geo in
-                    let width = geo.size.width
-                    
-                    ZStack(alignment: .leading) {
-                        Capsule()
-                            .fill(Color.gray.opacity(0.2))
-                            .frame(height: 3)
-                        
-                        Capsule()
-                            .fill(Color.orange)
-                            .frame(width: width * progress, height: 3)
-                            .animation(.easeInOut, value: progress)
-                    }
-                    .offset(y: 16)
-                }
-                
-                // Circles
-                HStack {
+                HStack(spacing: 0) {
                     ForEach(Array(week.days.enumerated()), id: \.element.id) { index, day in
                         
+                        // Circle
                         ZStack {
                             Circle()
                                 .fill(color(for: index, day: day))
@@ -60,10 +43,19 @@ struct WeekCardView: View {
                                     .font(.caption)
                             }
                         }
-                        .frame(maxWidth: .infinity)
                         .onTapGesture {
                             selectedDay = day
                             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                        }
+                        
+                        if index < week.days.count - 1 {
+                            HStack(spacing: 6) {
+                                Circle().frame(width: 6, height: 6)
+                                Circle().frame(width: 6, height: 6)
+                                Circle().frame(width: 6, height: 6)
+                            }
+                            .foregroundColor(.brown.opacity(0.6))
+                            .frame(maxWidth: .infinity)
                         }
                     }
                 }
