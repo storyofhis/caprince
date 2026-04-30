@@ -7,26 +7,6 @@
 
 import SwiftUI
 
-<<<<<<< Updated upstream
-struct TrainingPlan: Identifiable {
-    let id = UUID()
-    let title: String
-    let description: String
-    let icon: String
-    let color: Color
-}
-
-struct HomeView: View {
-    @State private var selectedTab = "Beginner 5K"
-    private let tabs = ["Beginner 5K", "10K Prep", "Half Marathon"]
-    
-    private let beginnerPlans = [
-        TrainingPlan(title: "Week 1: Easy Start", description: "3x 20 min walk/run", icon: "figure.run", color: .green),
-        TrainingPlan(title: "Week 2: Building Base", description: "3x 25 min steady run", icon: "bolt.fill", color: .green),
-        TrainingPlan(title: "Week 3: Push Further", description: "1x 30 min, 2x 20 min", icon: "flame.fill", color: .orange),
-        TrainingPlan(title: "Week 4: Race Ready", description: "1x 5k run", icon: "flag.checkered", color: .red)
-    ]
-=======
 //struct TrainingDay: Identifiable {
 //    let id = UUID()
 //    let title: String
@@ -47,7 +27,6 @@ struct HomeView: View {
     @State private var selectedDay: TrainingDay?
     @State private var showHistory = false
     @State private var beginnerPlans = RunningPlan.beginnerPlans
->>>>>>> Stashed changes
     
     var body: some View {
         VStack(spacing: 0) {
