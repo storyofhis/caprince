@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+<<<<<<< Updated upstream
 struct TrainingPlan: Identifiable {
     let id = UUID()
     let title: String
@@ -25,6 +26,28 @@ struct HomeView: View {
         TrainingPlan(title: "Week 3: Push Further", description: "1x 30 min, 2x 20 min", icon: "flame.fill", color: .orange),
         TrainingPlan(title: "Week 4: Race Ready", description: "1x 5k run", icon: "flag.checkered", color: .red)
     ]
+=======
+//struct TrainingDay: Identifiable {
+//    let id = UUID()
+//    let title: String
+//    let duration: String
+//    var isCompleted: Bool = false 
+//}
+//
+//struct TrainingWeek: Identifiable {
+//    let id = UUID()
+//    let title: String
+//    var days: [TrainingDay]
+//}
+
+struct HomeView: View {
+    @State private var selectedTab = "Training Programme 5K"
+    private let tabs = ["Training Programme 5K"]
+    @State private var navigateToMap = false
+    @State private var selectedDay: TrainingDay?
+    @State private var showHistory = false
+    @State private var beginnerPlans = RunningPlan.beginnerPlans
+>>>>>>> Stashed changes
     
     var body: some View {
         VStack(spacing: 0) {

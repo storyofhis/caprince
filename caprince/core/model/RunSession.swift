@@ -24,3 +24,5 @@ final class RunSession {
         self.averagePace = averagePace
     }
 }
+
+
