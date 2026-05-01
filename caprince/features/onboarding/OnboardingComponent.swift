@@ -42,7 +42,7 @@ struct OnboardingComponent: View {
                 combined.foregroundColor = .black
                 
                 if let range = combined.range(of: page.titleHighlight) {
-                    combined[range].foregroundColor = Color("BrownHighlightColor")
+                    combined[range].foregroundColor = Color("Brown-300")
                 }
                 return combined
             }()

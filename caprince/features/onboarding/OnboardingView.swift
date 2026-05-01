@@ -11,24 +11,22 @@ struct OnboardingView: View {
     @State private var currentIndex = 0
     
     var body: some View {
-        ZStack {
-            Color.white.ignoresSafeArea() // Background utama
-            
-            VStack {
-                // 1. Swiping Content
-                TabView(selection: $currentIndex) {
-                    ForEach(0..<onboardingData.count, id: \.self) { index in
-                        OnboardingComponent(page: onboardingData[index])
-                            .tag(index)
-                    }
+        
+        VStack {
+            // 1. Swiping Content
+            TabView(selection: $currentIndex) {
+                ForEach(0..<onboardingData.count, id: \.self) { index in
+                    OnboardingComponent(page: onboardingData[index])
+                        .tag(index)
                 }
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never)) // Sembunyikan titik bawaan Apple
-                .animation(.easeInOut, value: currentIndex)
-                
-                // 2. Custom Bottom Navigation
-                bottomNavigationBar
             }
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never)) // Sembunyikan titik bawaan Apple
+            .animation(.easeInOut, value: currentIndex)
+            
+            // 2. Custom Bottom Navigation
+            bottomNavigationBar
         }
+        
     }
     
     private var bottomNavigationBar: some View {
@@ -37,7 +35,7 @@ struct OnboardingView: View {
             HStack(spacing: 8) {
                 ForEach(0..<onboardingData.count, id: \.self) { index in
                     Circle()
-                        .fill(currentIndex == index ? Color("BrownHighlightColor") : Color.gray.opacity(0.3))
+                        .fill(currentIndex == index ? Color("Brown-400") : Color.gray.opacity(0.3))
                         .frame(width: 8, height: 8)
                 }
             }
@@ -62,7 +60,6 @@ struct OnboardingView: View {
             }
         }
         .padding(.leading, 40)
-//        .padding(.bottom, 20)
     }
 }
 

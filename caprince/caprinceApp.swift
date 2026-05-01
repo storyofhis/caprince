@@ -13,6 +13,7 @@ struct caprinceApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .globalBackground()
         }
         .modelContainer(for: RunSession.self)
     }
