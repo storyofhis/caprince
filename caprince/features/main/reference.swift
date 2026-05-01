@@ -16,38 +16,7 @@ struct ReferenceView: View {
             VStack(alignment: .leading, spacing: 32) {
                 
                 // MARK: - Your Progress
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Your Progress")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                    
-                    // Progress Card Wireframe
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(height: 180)
-                        .overlay(
-                            VStack {
-                                Spacer()
-                                // Progress bar wireframe
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color.gray.opacity(0.4))
-                                    .frame(height: 8)
-                                    .padding(.horizontal, 24)
-                                
-                                // Number labels wireframe
-                                HStack {
-                                    Text("1").fontWeight(.bold)
-                                    Spacer()
-                                    Text("2").fontWeight(.bold)
-                                    Spacer()
-                                    Text("3").fontWeight(.bold)
-                                }
-                                .padding(.horizontal, 48)
-                                .padding(.top, 8)
-                                .padding(.bottom, 24)
-                            }
-                        )
-                }
+                StorylineCardView()
                 
                 // MARK: - Weekly Report
                 VStack(alignment: .leading, spacing: 16) {
