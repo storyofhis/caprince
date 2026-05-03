@@ -51,6 +51,13 @@ struct mainPageView: View {
                                     )
                                 )
                                 .frame(width: 198, height: 130)
+                                .overlay(alignment: .bottomTrailing) {
+                                    Image("WR-Steps")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(height: 100)
+                                        .offset(x: 3, y: 3)
+                                }
                                 .overlay(
                                     VStack(alignment: .leading, spacing: 34) {
                                         Text("Steps")
@@ -72,11 +79,21 @@ struct mainPageView: View {
                                     .padding()
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 )
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
                             
                             // Goal
                             RoundedRectangle(cornerRadius: 10)
                                 .foregroundStyle(Color(red: 0.39, green: 0.31, blue: 0.23))
                                 .frame(width: 110, height: 130)
+                            
+                                // Blurred Highlight background
+                                .overlay(alignment: .bottom) {
+                                    Circle()
+                                        .fill(Color(red: 0.64, green: 0.74, blue: 0.55))
+                                        .frame(width: 80, height: 80)
+                                        .blur(radius: 20)
+                                        .offset(y: 40)
+                                }
                                 .overlay(
                                     VStack {
                                         Text("Goal")
@@ -91,6 +108,7 @@ struct mainPageView: View {
                                     }
                                     .padding()
                                 )
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
                         }
                         
                         // Bottom row
@@ -99,6 +117,13 @@ struct mainPageView: View {
                             RoundedRectangle(cornerRadius: 10)
                                 .foregroundStyle(Color(red: 0.39, green: 0.31, blue: 0.23))
                                 .frame(width: 154, height: 130)
+                                .overlay(alignment: .bottomTrailing) {
+                                    Image("WR-Calories")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(height: 50)
+                                        .offset(x: 2, y: 0)
+                                }
                                 .overlay(
                                     VStack(alignment: .leading, spacing: 34) {
                                         Text("Calories")
@@ -107,12 +132,12 @@ struct mainPageView: View {
                                             .foregroundStyle(.white)
                                         
                                         HStack(alignment: .lastTextBaseline) {
-                                            Text("3978")
+                                            Text("1056") // Updated to match your image!
                                                 .font(.title)
                                                 .fontWeight(.bold)
                                                 .foregroundColor(.white)
                                             
-                                            Text("kcal")
+                                            Text("Kcal")
                                                 .font(.caption)
                                                 .foregroundColor(.white)
                                         }
@@ -120,11 +145,20 @@ struct mainPageView: View {
                                     .padding()
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 )
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
                             
                             // Running Distance
                             RoundedRectangle(cornerRadius: 10)
                                 .foregroundStyle(Color(red: 0.64, green: 0.74, blue: 0.55))
                                 .frame(width: 154, height: 130)
+                                .overlay(alignment: .bottomTrailing) {
+                                    // Make sure you have an image named "paw_prints" in your Assets!
+                                    Image("WR-Running")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(height: 100)
+                                        .offset(x: 3, y: 10)
+                                }
                                 .overlay(
                                     VStack(alignment: .leading, spacing: 34) {
                                         Text("Running")
@@ -146,6 +180,7 @@ struct mainPageView: View {
                                     .padding()
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 )
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
                         }
                     }
                 }
