@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct OnboardingView: View {
+    @AppStorage("hasSeenOnboarding") var hasSeenOnboarding: Bool = false
     @State private var currentIndex = 0
     
     var body: some View {
-        
+
         VStack {
             // 1. Swiping Content
             TabView(selection: $currentIndex) {
@@ -47,8 +48,10 @@ struct OnboardingView: View {
                 if currentIndex < onboardingData.count - 1 {
                     currentIndex += 1
                 } else {
-                    // Action ketika selesai onboarding (masuk ke halaman utama)
-                    print("Selesai onboarding!")
+                    // Masuk ke halaman utama
+                    withAnimation {
+                        hasSeenOnboarding = true
+                    }
                 }
             }) {
                 Image(systemName: "arrow.right")
