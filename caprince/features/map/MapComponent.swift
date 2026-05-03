@@ -19,8 +19,27 @@ struct MapComponent: View {
                 MapPolyline(coordinates: coordinates)
                     .stroke(.green, style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round))
             }
-            
             UserAnnotation()
+        }
+        
+        .mapControlVisibility(.hidden)
+        
+        .overlay(alignment: .topTrailing) { //button back to center
+            Button(action: {
+                withAnimation(.easeInOut) {
+                    cameraPosition = .userLocation(followsHeading: true, fallback: .automatic)
+                }
+            }) {
+                Image(systemName: "location.fill")
+                    .font(.title3)
+                    .foregroundColor(.black)
+                    .padding(10)
+                    .background(Color.white)
+                    .clipShape(Circle())
+                    .shadow(color: .black.opacity(0.15), radius: 5, x: 0, y: 3)
+            }
+            .padding(.trailing, 24)
+            .padding(.top, 75)
         }
     }
 }

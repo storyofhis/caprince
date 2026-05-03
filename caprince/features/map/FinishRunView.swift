@@ -116,5 +116,13 @@ struct RoundedCorner: Shape {
     }
 }
 
+#Preview {
+    let dummyViewModel = RunTrackerViewModel()
+    dummyViewModel.distance = 5.24 // Contoh jarak 5 KM
+    dummyViewModel.timeElapsed = 1800 // Contoh waktu 30 menit
+    
+    return FinishRunView(viewModel: dummyViewModel)
+}
+
 
 

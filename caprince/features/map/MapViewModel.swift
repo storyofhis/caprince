@@ -77,10 +77,10 @@ class RunTrackerViewModel: ObservableObject {
     }
     
     var formattedTime: String {
-        let h = timeElapsed / 3600
+        let h = timeElapsed/3600
         let m = (timeElapsed % 3600) / 60
         let s = timeElapsed % 60
-        return h > 0 ? String(format: "%02d:%02d:%02d", h, m, s) : String(format: "%02d:%02d", m, s)
+        return String(format: "%02d:%02d:%02d", h, m, s)
     }
     
     var formattedPace: String {

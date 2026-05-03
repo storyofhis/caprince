@@ -14,7 +14,7 @@ struct ActiveRunView: View {
         ZStack(alignment: .bottom) {
             // Background Layer
             if viewModel.isMaximized {
-                Color("Brown-100").ignoresSafeArea()
+                Color("Base-100").ignoresSafeArea()
             } else {
                 MapComponent(coordinates: $viewModel.coordinates, cameraPosition: $viewModel.cameraPosition)
                     .ignoresSafeArea()
@@ -35,7 +35,11 @@ struct ActiveRunView: View {
                     Spacer()
                     Color.clear.frame(width: 44, height: 44)
                 }
-                .padding(.horizontal).padding(.top, 10)
+                .padding(.horizontal)
+                .padding(.top,70)
+//                .offset(y: -20)
+//                .ignoresSafeArea()
+                
                 
                 Spacer()
                 
@@ -43,29 +47,46 @@ struct ActiveRunView: View {
                 if viewModel.isMaximized {
                     VStack {
                         Text(viewModel.formattedTime)
-                            .font(.system(size: 50, weight: .bold)).foregroundColor(.white)
-                            .padding(.horizontal, 30).padding(.vertical, 15)
-                            .background(Color(red: 0.45, green: 0.35, blue: 0.25)).cornerRadius(20)
-                            .padding(.bottom, 20)
+                            .font(.system(size: 30)).foregroundColor(.white)
+                            .bold()
+                            .padding(.horizontal, 30).padding(.vertical, 10)
+                            .background(Color("Brown-500")).cornerRadius(20)
+                            .padding(.bottom,40)
                         
                         Image("capybara_img")
-                            .resizable().scaledToFit().frame(height: 150).padding(.bottom, 40)
+                            .resizable().scaledToFit().frame(height: 150)
+                        
+                        Text(viewModel.formattedPace)
+                            .font(.system(size: 30)).foregroundColor(.black)
+                            .padding(.horizontal, 30).padding(.top, 15)
+                            .bold()
+                        Text("Avg.pace(/km)")
+                            .font(.system(size: 20)).foregroundColor(.black)
+                            .padding(.horizontal, 30)
+                        
+                        Text(String(format: "%.2f", viewModel.distance))
+                            .font(.system(size: 30)).foregroundColor(.black)
+                            .padding(.horizontal, 30).padding(.top, 15)
+                            .bold()
+                        Text("Distance (km)")
+                            .font(.system(size: 20)).foregroundColor(.black)
+                            .padding(.horizontal, 30).padding(.bottom,20)
                     }
                     .transition(.opacity)
                 }
                 
-                // Dashboard Card
                 dashboardCard
             }
+            .ignoresSafeArea(.container, edges: .top)
         }
         .animation(.spring(), value: viewModel.isMaximized)
         .animation(.easeInOut, value: viewModel.sessionState)
     }
     
-    // Sub-view: Kotak Kontrol Bawah
+    //kotak stats
     private var dashboardCard: some View {
         VStack(spacing: 20) {
-            // Minimize/Maximize Button
+            //Minimize/Maximize Button
             HStack {
                 Spacer()
                 Button(action: { viewModel.isMaximized.toggle() }) {
@@ -78,9 +99,9 @@ struct ActiveRunView: View {
             HStack(spacing: viewModel.isMaximized ? 50 : 30) {
                 if !viewModel.isMaximized {
                     StatView(title: "Time", value: viewModel.formattedTime)
+                    StatView(title: "Avg. pace(/km)", value: viewModel.formattedPace)
+                    StatView(title: "Distance (km)", value: String(format: "%.2f", viewModel.distance))
                 }
-                StatView(title: "Avg. pace(/km)", value: viewModel.formattedPace)
-                StatView(title: "Distance (km)", value: String(format: "%.2f", viewModel.distance))
             }
             
             // Controls
@@ -88,7 +109,7 @@ struct ActiveRunView: View {
                 Button(action: { viewModel.startSession() }) {
                     Image(systemName: "play.fill")
                         .font(.largeTitle).foregroundColor(.white)
-                        .frame(width: 80, height: 80).background(Color(red: 0.45, green: 0.35, blue: 0.25)).clipShape(Circle())
+                        .frame(width: 80, height: 80).background(Color("Brown-500")).clipShape(Circle())
                 }
                 .padding(.top, 10)
             } else {
@@ -114,8 +135,11 @@ struct ActiveRunView: View {
                 .padding(.top, 10)
             }
         }
-        .padding(24).background(Color.white).cornerRadius(30)
-        .shadow(color: .black.opacity(0.1), radius: 15, x: 0, y: 10)
-        .padding(.horizontal, 16).padding(.bottom, 20)
+        .padding(20)
+        .background(Color.white)
     }
+}
+
+#Preview {
+    ActiveRunView(viewModel: RunTrackerViewModel())
 }
