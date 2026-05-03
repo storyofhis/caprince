@@ -55,8 +55,8 @@ struct mainPageView: View {
                                     Image("WR-Steps")
                                         .resizable()
                                         .scaledToFit()
-                                        .frame(height: 100)
-                                        .offset(x: 3, y: 3)
+                                        .frame(height: 90)
+                                        .offset(x: 8, y: 10)
                                 }
                                 .overlay(
                                     VStack(alignment: .leading, spacing: 34) {
@@ -85,9 +85,8 @@ struct mainPageView: View {
                             RoundedRectangle(cornerRadius: 10)
                                 .foregroundStyle(Color(red: 0.39, green: 0.31, blue: 0.23))
                                 .frame(width: 110, height: 130)
-                            
-                                // Blurred Highlight background
                                 .overlay(alignment: .bottom) {
+                                    // Blurred highlight effect matching your design
                                     Circle()
                                         .fill(Color(red: 0.64, green: 0.74, blue: 0.55))
                                         .frame(width: 80, height: 80)
@@ -122,7 +121,7 @@ struct mainPageView: View {
                                         .resizable()
                                         .scaledToFit()
                                         .frame(height: 50)
-                                        .offset(x: 2, y: 0)
+                                        .offset(x: 0, y: 2)
                                 }
                                 .overlay(
                                     VStack(alignment: .leading, spacing: 34) {
@@ -152,12 +151,11 @@ struct mainPageView: View {
                                 .foregroundStyle(Color(red: 0.64, green: 0.74, blue: 0.55))
                                 .frame(width: 154, height: 130)
                                 .overlay(alignment: .bottomTrailing) {
-                                    // Make sure you have an image named "paw_prints" in your Assets!
                                     Image("WR-Running")
                                         .resizable()
                                         .scaledToFit()
                                         .frame(height: 100)
-                                        .offset(x: 3, y: 10)
+                                        .offset(x: 2, y: 10)
                                 }
                                 .overlay(
                                     VStack(alignment: .leading, spacing: 34) {
