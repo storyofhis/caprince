@@ -72,6 +72,14 @@ struct WeekCardView: View {
             .cornerRadius(16)
         }
         .shadow(color: .black.opacity(0.15), radius: 5, x: 0, y: 4)
+        .sheet(item: $selectedDay) { day in
+            WorkoutDetailSheet(day: day) {
+                // Action when user taps "Start Run" on the sheet
+                selectedDay = nil
+                navigateToMap = true
+            }
+            .presentationDetents([.medium, .large]) // Makes it a nice half-sheet
+        }
     }
     
     // Color the 1, 2, 3 buttons

@@ -190,10 +190,14 @@ struct mainPageView: View {
                         Text("Workout Plan")
                             .font(Font.title2.bold())
                             .foregroundStyle(Color(red: 0.39, green: 0.31, blue: 0.23))
+                        
                         Spacer()
-                        Text("View All Workouts")
-                            .font(.caption)
-                            .foregroundColor(.gray)
+                        
+                        NavigationLink(destination: ViewAllWeeks()){
+                            Text("View All Workouts")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
                     }
                     
                     // Week card view
@@ -206,5 +210,7 @@ struct mainPageView: View {
 }
 
 #Preview {
-    mainPageView()
+    NavigationStack {
+        mainPageView()
+    }
 }
