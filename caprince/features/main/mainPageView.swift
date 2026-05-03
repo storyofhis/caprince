@@ -6,7 +6,6 @@
 //
 
 // TODO: Fix skeleton, make it less hardcodey
-// TODO: Clean up storyline preview
 
 import SwiftUI
 
@@ -25,7 +24,7 @@ struct mainPageView: View {
                         .font(Font.title2.bold())
                         .foregroundStyle(Color(red: 0.39, green: 0.31, blue: 0.23))
                     
-                    StorylinePreview()
+                    StorylineCardView()
                 }
                 
                 // Weekly Report
