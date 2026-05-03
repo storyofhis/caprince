@@ -5,6 +5,7 @@ struct GlobalBackground: ViewModifier {
         ZStack {
             Color(.black)
                 .ignoresSafeArea()
+            content
         }
     }
 }
