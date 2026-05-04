@@ -12,14 +12,16 @@ import SwiftData
 final class RunSession {
     var id: UUID
     var date: Date
-    var duration: TimeInterval
+    var programName: String
+    var timeElapsed: TimeInterval
     var distance: Double
     var averagePace: String
     
-    init(id: UUID = UUID(), date: Date = Date(), duration: TimeInterval, distance: Double, averagePace: String) {
+    init(id: UUID = UUID(), date: Date = Date(), programName: String, timeElapsed: TimeInterval, distance: Double, averagePace: String) {
         self.id = id
         self.date = date
-        self.duration = duration
+        self.programName = programName
+        self.timeElapsed = timeElapsed
         self.distance = distance
         self.averagePace = averagePace
     }

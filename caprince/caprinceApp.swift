@@ -14,5 +14,6 @@ struct caprinceApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: RunSession.self)
     }
 }
