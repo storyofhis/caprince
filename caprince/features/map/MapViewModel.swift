@@ -1,180 +1,95 @@
-//
-//  MapViewModel.swift
-//  caprince
-//
-//  Created by Maula Izza Azizi on 24/04/26.
-//
-
-import SwiftUI
+import Foundation
+import _MapKit_SwiftUI
 import MapKit
 import Combine
-import SwiftData
 
 enum RunState {
-    case idle
-    case running
-    case paused
+    case idle, running, paused, finished
 }
 
-final class MapViewModel: ObservableObject {
+class RunTrackerViewModel: ObservableObject {
+    @Published var sessionState: RunState = .idle
+    @Published var isMaximized: Bool = false
+    @Published var currentActivity: String = "Stationary Mode"
     
-    @Published var cameraPosition: MapCameraPosition = .automatic
-    @Published var route: [CLLocationCoordinate2D] = []
-    @Published var runState: RunState = .idle
+    // Tracking Data
+    @Published var distance: Double = 0.0
+    @Published var timeElapsed: Int = 0
+    @Published var coordinates: [CLLocationCoordinate2D] = []
+    @Published var cameraPosition: MapCameraPosition = .userLocation(followsHeading: true, fallback: .automatic)
     
+    private var timer: Timer?
+    private let motionService = MotionService()
     private let locationService = LocationService()
-    private var cancellables = Set<AnyCancellable>()
-    private var hasSetInitialPosition = false
-    
-    @Published var elapsedTime: TimeInterval = 0
-
-    private var timer: AnyCancellable?
-    private var lastUpdateDate: Date?
     
     init() {
-        bindLocation()
-//        locationService.requestLocation()
+        locationService.onLocationUpdate = { [weak self] coords in self?.coordinates = coords }
+        locationService.onDistanceUpdate = { [weak self] dist in self?.distance = dist }
+        motionService.onActivityUpdate = { [weak self] act in self?.currentActivity = act }
     }
     
-    func formatTime(_ time: TimeInterval) -> String {
-        let minutes = Int(time) / 60
-        let seconds = Int(time) % 60
-        return String(format: "%02d:%02d", minutes, seconds)
-    }
-    
-    private func startTimer() {
-        lastUpdateDate = Date()
-        timer = Timer.publish(every: 1, on: .main, in: .common)
-            .autoconnect()
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                let now = Date()
-                if self.runState == .running, let last = self.lastUpdateDate {
-                    self.elapsedTime += now.timeIntervalSince(last)
-                }
-                self.lastUpdateDate = now
-            }
-    }
-    
-    private func stopTimer() {
-        timer?.cancel()
-        timer = nil
-    }
-    
-    private func bindLocation() {
-        locationService.$locations
-            .sink { [weak self] locations in
-                guard let self = self, self.runState == .running else { return }
-                
-                guard let last = locations.last,
-                      last.horizontalAccuracy < 20 else { return }
-                
-                let coordinate = last.coordinate
-                
-                // ✅ Append new point
-                self.route.append(coordinate)
-                
-                // ✅ Move camera
-                self.updateCamera(coordinate)
-                
-                // ✅ Save for widget
-                self.saveToSharedStorage(coordinate)
-            }
-            .store(in: &cancellables)
-    }
-    
-    private func updateCamera(_ coordinate: CLLocationCoordinate2D) {
-        let camera = MKMapCamera(
-            lookingAtCenter: coordinate,
-            fromDistance: 1000,
-            pitch: 60,
-            heading: 220
-        )
-        
-        cameraPosition = .camera(MapCamera(camera))
-    }
-    
-    private func saveToSharedStorage(_ coordinate: CLLocationCoordinate2D) {
-        let defaults = UserDefaults(suiteName: "group.com.appleacademy.caprince")
-        defaults?.set(coordinate.latitude, forKey: "lat")
-        defaults?.set(coordinate.longitude, forKey: "lon")
-    }
-    
-    func startTracking() {
-        guard runState == .idle else { return }
-        
-        route.removeAll()
-        runState = .running
-        elapsedTime = 0
-        
-        locationService.start()
+    // MARK: - Actions
+    func startSession() {
+        sessionState = .running
+        cameraPosition = .userLocation(followsHeading: true, fallback: .automatic)
+        locationService.startTracking()
+        motionService.startTracking()
         startTimer()
     }
     
-    func pauseTracking() {
-        guard runState == .running else { return }
-        runState = .paused
-    }
-    
-    func resumeTracking() {
-        guard runState == .paused else { return }
-        lastUpdateDate = Date() // Reset update date so we don't jump time
-        runState = .running
-    }
-
-    func finishTracking(context: ModelContext) {
-        guard runState != .idle else { return }
-        
-        let session = RunSession(
-            duration: elapsedTime,
-            distance: totalDistance() / 1000.0,
-            averagePace: averagePace()
-        )
-        
-        do {
-            context.insert(session)
-            try context.save()
-            print("✅ Run saved successfully")
-        } catch {
-            print("❌ Error saving run: \(error.localizedDescription)")
-        }
-        
-        // Reset state
-        runState = .idle
-        locationService.stop()
+    func pauseSession() {
+        sessionState = .paused
+        locationService.pauseTracking()
         stopTimer()
-        route.removeAll()
-        elapsedTime = 0
     }
     
-    func recenter() {
-        if let coordinate = locationService.locations.last?.coordinate {
-            updateCamera(coordinate)
+    func resumeSession() {
+        sessionState = .running
+        cameraPosition = .userLocation(followsHeading: true, fallback: .automatic)
+        locationService.startTracking()
+        startTimer()
+    }
+    
+    func resetSession() {
+        sessionState = .idle
+        isMaximized = false
+        stopTimer()
+        locationService.pauseTracking()
+        motionService.stopTracking()
+        locationService.resetData()
+        timeElapsed = 0
+        currentActivity = "Stationary Mode"
+    }
+    func stopSession() {
+        sessionState = .finished
+        stopTimer()
+    }
+    
+    // MARK: - Formatters & Timer
+    private func startTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            self?.timeElapsed += 1
         }
     }
-    
-    func totalDistance() -> Double {
-        guard route.count > 1 else { return 0 }
-        
-        return zip(route, route.dropFirst()).reduce(0) { result, pair in
-            let start = CLLocation(latitude: pair.0.latitude, longitude: pair.0.longitude)
-            let end = CLLocation(latitude: pair.1.latitude, longitude: pair.1.longitude)
-            return result + start.distance(from: end)
-        }
+    private func stopTimer() {
+        timer?.invalidate()
+        timer = nil
     }
     
-    func averagePace() -> String {
-        let distanceKm = totalDistance() / 1000.0
-        guard distanceKm > 0.01 else { return "0'00\"" } // Prevent weird numbers if distance is tiny
-        
-        let totalMinutes = elapsedTime / 60.0
-        let paceMinutes = totalMinutes / distanceKm
-        
-        guard paceMinutes < 60 else { return "59'59\"" } // Cap pace if extremely slow
-        
-        let min = Int(paceMinutes)
-        let sec = Int((paceMinutes - Double(min)) * 60.0)
-        
-        return String(format: "%d'%02d\"", min, sec)
+    var formattedTime: String {
+        let h = timeElapsed/3600
+        let m = (timeElapsed % 3600) / 60
+        let s = timeElapsed % 60
+        return String(format: "%02d:%02d:%02d", h, m, s)
+    }
+    
+    var formattedPace: String {
+        guard distance > 0.01 else { return "-:--" }
+        let totalMinutes = Double(timeElapsed) / 60
+        let pace = totalMinutes / distance
+        guard pace < 60 else { return "59:59" } //Cap pace
+        let m = Int(pace)
+        let s = Int((pace - Double(m)) * 60)
+        return String(format: "%d:%02d", m, s)
     }
 }

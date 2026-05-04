@@ -12,7 +12,7 @@ struct OnboardingView: View {
     @State private var currentIndex = 0
     
     var body: some View {
-        
+
         VStack {
             // 1. Swiping Content
             TabView(selection: $currentIndex) {

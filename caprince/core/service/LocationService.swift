@@ -4,34 +4,53 @@
 //
 //  Created by Maula Izza Azizi on 24/04/26.
 //
+import Foundation
 import CoreLocation
-import Combine
 
-final class LocationService: NSObject, ObservableObject, CLLocationManagerDelegate {
+class LocationService: NSObject, CLLocationManagerDelegate {
+    private let locationManager = CLLocationManager()
+    var onLocationUpdate: (([CLLocationCoordinate2D]) -> Void)?
+    var onDistanceUpdate: ((Double) -> Void)?
     
-    private let manager = CLLocationManager()
-    
-    @Published var locations: [CLLocation] = []
+    private var coordinates: [CLLocationCoordinate2D] = []
+    private var totalDistance: Double = 0.0 // Dalam KM
     
     override init() {
         super.init()
-        manager.delegate = self
-        manager.desiredAccuracy = kCLLocationAccuracyBest
-        manager.distanceFilter = 5 // ✅ important (meters)
+        locationManager.delegate = self
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.distanceFilter = 5
     }
     
-    func start() {
-        if manager.authorizationStatus == .notDetermined {
-            manager.requestWhenInUseAuthorization()
+    func startTracking() {
+        locationManager.startUpdatingLocation()
+        locationManager.startUpdatingHeading() //cone
+    }
+    
+    func pauseTracking() {
+        locationManager.stopUpdatingLocation()
+        locationManager.stopUpdatingHeading()
+    }
+    
+    func resetData() {
+        coordinates.removeAll()
+        totalDistance = 0.0
+        onLocationUpdate?(coordinates)
+        onDistanceUpdate?(totalDistance)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else { return }
+        
+        coordinates.append(location.coordinate)
+        onLocationUpdate?(coordinates)
+        
+        if coordinates.count > 1 {
+            let previous = CLLocation(latitude: coordinates[coordinates.count - 2].latitude,
+                                      longitude: coordinates[coordinates.count - 2].longitude)
+            totalDistance += (location.distance(from: previous) / 1000.0)
+            onDistanceUpdate?(totalDistance)
         }
-        manager.startUpdatingLocation()
-    }
-    
-    func stop() {
-        manager.stopUpdatingLocation()
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations newLocations: [CLLocation]) {
-        locations.append(contentsOf: newLocations)
     }
 }

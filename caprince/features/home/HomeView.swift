@@ -141,7 +141,7 @@ struct HomeView: View {
         }
         .navigationBarHidden(true)
         .navigationDestination(isPresented: $navigateToMap) {
-            MapView()
+            MainMapView()
         }
         .sheet(isPresented: $showHistory) {
             HistoryView()
