@@ -11,7 +11,8 @@ struct WeekCardView: View {
 
     @State private var navigateToMap = false
     @Binding var week: TrainingWeek
-    @Binding var selectedDay: TrainingDay?
+    @State private var selectedDay: TrainingDay? = nil
+    var isLocked: Bool = false
     
     var progress: CGFloat {
         let completed = week.days.filter { $0.isCompleted }.count
@@ -42,9 +43,9 @@ struct WeekCardView: View {
                                 .frame(width: 60, height: 60)
                             
                             if day.isCompleted {
-                                Image(systemName: "checkmark")
-                                    .font(.caption)
-                                    .foregroundColor(.white)
+                                Text("\(index + 1)")
+                                    .font(.title2)
+                                    .foregroundStyle(.white)
                             } else {
                                 Text("\(index + 1)")
                                     .font(.title2)
@@ -70,22 +71,39 @@ struct WeekCardView: View {
             .padding()
             .background(Color(red: 1, green: 0.98, blue: 0.88))
             .cornerRadius(16)
+            .opacity(isLocked ? 0.5 : 1.0)
         }
         .shadow(color: .black.opacity(0.15), radius: 5, x: 0, y: 4)
         .sheet(item: $selectedDay) { day in
-            WorkoutDetailSheet(day: day) {
-                // Action when user taps "Start Run" on the sheet
-                selectedDay = nil
-                navigateToMap = true
-            }
-            .presentationDetents([.medium, .large]) // Makes it a nice half-sheet
+            let isAvailable = !isLocked && (day.id == week.days.first(where: { !$0.isCompleted })?.id)
+            
+            WorkoutDetailSheet(
+                day: day,
+                isAvailable: isAvailable,
+                onStart: {
+                    // Action when user taps "Start Run" on the sheet
+                    selectedDay = nil
+                    navigateToMap = true
+                },
+                onMarkDone: {
+                    if let index = week.days.firstIndex(where: { $0.id == day.id }) {
+                        week.days[index].isCompleted = true
+                    }
+                    selectedDay = nil
+                }
+            )
+            .presentationDetents([.medium, .large]) // half sheet
         }
     }
     
     // Color the 1, 2, 3 buttons
     func color(for index: Int, day: TrainingDay) -> Color {
+        if isLocked {
+            return Color.gray.opacity(0.2)
+        }
+        
         if day.isCompleted {
-            return .green
+            return Color("green-200")
         }
         
         if index == week.days.firstIndex(where: { !$0.isCompleted }) {
@@ -98,8 +116,7 @@ struct WeekCardView: View {
 
 #Preview {
     WeekCardView(
-        week: .constant(RunningPlan.beginnerPlans[0]),
-        selectedDay: .constant(nil)
+        week: .constant(RunningPlan.beginnerPlans[0])
     )
     .padding()
 }

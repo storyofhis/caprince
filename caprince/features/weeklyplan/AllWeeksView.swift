@@ -10,13 +10,13 @@ import SwiftUI
 struct ViewAllWeeks: View {
     @Environment(\.dismiss) var dismiss
     @State private var weeks: [TrainingWeek] = RunningPlan.beginnerPlans
-    @State private var selectedDay: TrainingDay? = nil
     
     var body: some View {
         ScrollView {
             VStack(spacing: 30) {
-                ForEach($weeks) { $week in
-                    WeekCardView(week: $week, selectedDay: $selectedDay)
+                ForEach(weeks.indices, id: \.self) { index in
+                    let isLocked = index > 0 && weeks[index - 1].days.filter({ $0.isCompleted }).count < 2
+                    WeekCardView(week: $weeks[index], isLocked: isLocked)
                 }
             }
             .padding(.horizontal, 24)

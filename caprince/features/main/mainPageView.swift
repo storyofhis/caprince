@@ -12,7 +12,6 @@ import SwiftUI
 struct mainPageView: View {
     // Sample data for weekly workout plan card
     @State private var sampleWeek = RunningPlan.beginnerPlans[0]
-    @State private var selectedDay: TrainingDay? = nil
     
     var body: some View {
         ScrollView {
@@ -201,7 +200,7 @@ struct mainPageView: View {
                     }
                     
                     // Week card view
-                    WeekCardView(week: $sampleWeek, selectedDay: $selectedDay)
+                    WeekCardView(week: $sampleWeek)
                 }
             }
             .padding(38)
