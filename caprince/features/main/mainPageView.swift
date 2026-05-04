@@ -13,6 +13,7 @@ struct mainPageView: View {
     // Sample data for weekly workout plan card
     @State private var sampleWeek = RunningPlan.beginnerPlans[0]
     @State private var selectedDay: TrainingDay? = nil
+    @State private var navigateToMap = false
     
     var body: some View {
         ScrollView {
@@ -201,10 +202,13 @@ struct mainPageView: View {
                     }
                     
                     // Week card view
-                    WeekCardView(week: $sampleWeek, selectedDay: $selectedDay)
+                    WeekCardView(navigateToMap: $navigateToMap, week: $sampleWeek, selectedDay: $selectedDay)
                 }
             }
             .padding(38)
+        }
+        .navigationDestination(isPresented: $navigateToMap) {
+            MainMapView()
         }
     }
 }

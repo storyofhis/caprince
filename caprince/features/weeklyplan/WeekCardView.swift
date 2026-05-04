@@ -9,7 +9,7 @@ import SwiftUI
 
 struct WeekCardView: View {
 
-    @State private var navigateToMap = false
+    @Binding var navigateToMap: Bool
     @Binding var week: TrainingWeek
     @Binding var selectedDay: TrainingDay?
     
@@ -98,6 +98,7 @@ struct WeekCardView: View {
 
 #Preview {
     WeekCardView(
+        navigateToMap: .constant(false),
         week: .constant(RunningPlan.beginnerPlans[0]),
         selectedDay: .constant(nil)
     )

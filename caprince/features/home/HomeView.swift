@@ -100,6 +100,7 @@ struct HomeView: View {
                     VStack(spacing: 16) {
                         ForEach($beginnerPlans) { $plan in
                             WeekCardView(
+                                navigateToMap: $navigateToMap,
                                 week: $plan,
                                 selectedDay: $selectedDay
                             )

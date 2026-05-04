@@ -11,12 +11,13 @@ struct ViewAllWeeks: View {
     @Environment(\.dismiss) var dismiss
     @State private var weeks: [TrainingWeek] = RunningPlan.beginnerPlans
     @State private var selectedDay: TrainingDay? = nil
+    @State private var navigateToMap = false
     
     var body: some View {
         ScrollView {
             VStack(spacing: 30) {
                 ForEach($weeks) { $week in
-                    WeekCardView(week: $week, selectedDay: $selectedDay)
+                    WeekCardView(navigateToMap: $navigateToMap, week: $week, selectedDay: $selectedDay)
                 }
             }
             .padding(.horizontal, 24)
@@ -46,6 +47,9 @@ struct ViewAllWeeks: View {
                     .font(.headline)
                     .foregroundColor(Color(red: 0.39, green: 0.31, blue: 0.23))
             }
+        }
+        .navigationDestination(isPresented: $navigateToMap) {
+            MainMapView()
         }
     }
 }
