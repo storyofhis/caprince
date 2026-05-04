@@ -25,6 +25,7 @@ struct ActiveRunView: View {
                 HStack {
                     Button(action: { /* Back Action */ }) {
                         Image(systemName: "chevron.left")
+                            .foregroundColor(.black)
                             .padding(12).background(Color.white).clipShape(Circle()).shadow(radius: 3)
                     }
                     Spacer()
@@ -37,8 +38,8 @@ struct ActiveRunView: View {
                 }
                 .padding(.horizontal)
                 .padding(.top,70)
-//                .offset(y: -20)
-//                .ignoresSafeArea()
+                //                .offset(y: -20)
+                //                .ignoresSafeArea()
                 
                 
                 Spacer()
@@ -47,7 +48,7 @@ struct ActiveRunView: View {
                 if viewModel.isMaximized {
                     VStack {
                         Text(viewModel.formattedTime)
-                            .font(.system(size: 30)).foregroundColor(.white)
+                            .font(.system(size: 60)).foregroundColor(.white)
                             .bold()
                             .padding(.horizontal, 30).padding(.vertical, 10)
                             .background(Color("Brown-500")).cornerRadius(20)
@@ -73,6 +74,11 @@ struct ActiveRunView: View {
                             .padding(.horizontal, 30).padding(.bottom,20)
                     }
                     .transition(.opacity)
+                    .onTapGesture {
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                            viewModel.isMaximized.toggle()
+                        }
+                    }
                 }
                 
                 dashboardCard
@@ -88,12 +94,25 @@ struct ActiveRunView: View {
         VStack(spacing: 20) {
             //Minimize/Maximize Button
             HStack {
+                
                 Spacer()
                 Button(action: { viewModel.isMaximized.toggle() }) {
                     Image(systemName: viewModel.isMaximized ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
-                        .padding(10).background(Color.gray.opacity(0.15)).clipShape(Circle()).foregroundColor(.black)
+                        .foregroundColor(.black)
+                        .padding(6)
                 }
             }
+            
+            .padding(13)
+            .background(Color("Brown-300"))
+            .clipShape(
+                UnevenRoundedRectangle(
+                    topLeadingRadius: 10,
+                    topTrailingRadius: 10
+                )
+            )
+            
+            
             
             // Stats
             HStack(spacing: viewModel.isMaximized ? 50 : 30) {
@@ -135,7 +154,11 @@ struct ActiveRunView: View {
                 .padding(.top, 10)
             }
         }
-        .padding(20)
+        .onTapGesture {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                viewModel.isMaximized.toggle()
+            }
+        }
         .background(Color.white)
     }
 }

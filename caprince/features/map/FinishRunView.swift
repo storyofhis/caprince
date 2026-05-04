@@ -30,13 +30,11 @@ struct FinishRunView: View {
                 
                 // Bagianbwh: report
                 VStack(spacing: 20) {
-                    Capsule()
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(width: 40, height: 5)
-                        .padding(.top, 10)
                     
                     Text("Week 1 Day 1")
                         .font(.caption)
+                        .padding(.top, 30)
+                    
                         .foregroundColor(.gray)
                     Text("COMPLETED")
                         .font(.title2)

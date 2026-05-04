@@ -18,8 +18,7 @@ class MotionService {
             guard let activity = activity else { return }
             if activity.running { self?.onActivityUpdate?("Running Mode") }
             else if activity.walking { self?.onActivityUpdate?("Walk Mode") }
-            else if activity.stationary { self?.onActivityUpdate?("Stationary Mode") }
-            else { self?.onActivityUpdate?("Unknown") }
+            else { self?.onActivityUpdate?("Stationary Mode") }
         }
     }
     

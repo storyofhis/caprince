@@ -17,14 +17,16 @@ struct MapComponent: View {
             
             if !coordinates.isEmpty {
                 MapPolyline(coordinates: coordinates)
-                    .stroke(.green, style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round))
+                    .stroke(.green, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
             }
             UserAnnotation()
         }
+        .tint(Color("green-400"))
         
         .mapControlVisibility(.hidden)
         
-        .overlay(alignment: .topTrailing) { //button back to center
+        //button back to center
+        .overlay(alignment: .topTrailing) {
             Button(action: {
                 withAnimation(.easeInOut) {
                     cameraPosition = .userLocation(followsHeading: true, fallback: .automatic)
