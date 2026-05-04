@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct WeekCardView: View {
+
     @State private var navigateToMap = false
     @Binding var week: TrainingWeek
     @Binding var selectedDay: TrainingDay?
@@ -18,10 +19,16 @@ struct WeekCardView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 0) {
             
             Text(week.title)
                 .font(.headline)
+            // TODO: Change this color into default asset
+                .foregroundStyle(.white)
+                .padding(.horizontal, 26)
+                .padding(.vertical, 10)
+                .background(Color(red: 0.45, green: 0.35, blue: 0.25))
+                .clipShape(.rect(topLeadingRadius: 16, topTrailingRadius: 16))
             
             ZStack {
                 
@@ -32,7 +39,7 @@ struct WeekCardView: View {
                         ZStack {
                             Circle()
                                 .fill(color(for: index, day: day))
-                                .frame(width: 40, height: 40)
+                                .frame(width: 60, height: 60)
                             
                             if day.isCompleted {
                                 Image(systemName: "checkmark")
@@ -40,7 +47,7 @@ struct WeekCardView: View {
                                     .foregroundColor(.white)
                             } else {
                                 Text("\(index + 1)")
-                                    .font(.caption)
+                                    .font(.title2)
                             }
                         }
                         .onTapGesture {
@@ -54,27 +61,45 @@ struct WeekCardView: View {
                                 Circle().frame(width: 6, height: 6)
                                 Circle().frame(width: 6, height: 6)
                             }
-                            .foregroundColor(.brown.opacity(0.6))
+                            .foregroundColor(Color("Brown-600"))
                             .frame(maxWidth: .infinity)
                         }
                     }
                 }
             }
+            .padding()
+            .background(Color(red: 1, green: 0.98, blue: 0.88))
+            .cornerRadius(16)
         }
-        .padding()
-        .background(Color(UIColor.secondarySystemBackground))
-        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.15), radius: 5, x: 0, y: 4)
+        .sheet(item: $selectedDay) { day in
+            WorkoutDetailSheet(day: day) {
+                // Action when user taps "Start Run" on the sheet
+                selectedDay = nil
+                navigateToMap = true
+            }
+            .presentationDetents([.medium, .large]) // Makes it a nice half-sheet
+        }
     }
     
+    // Color the 1, 2, 3 buttons
     func color(for index: Int, day: TrainingDay) -> Color {
         if day.isCompleted {
             return .green
         }
         
         if index == week.days.firstIndex(where: { !$0.isCompleted }) {
-            return Color.orange.opacity(0.3)
+            return Color("Brown-200")
         }
         
         return Color.gray.opacity(0.2)
     }
+}
+
+#Preview {
+    WeekCardView(
+        week: .constant(RunningPlan.beginnerPlans[0]),
+        selectedDay: .constant(nil)
+    )
+    .padding()
 }
