@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ActiveRunView: View {
     @ObservedObject var viewModel: RunTrackerViewModel
+    @State private var currentFrame = 1
+    @State private var spriteTimer: Timer? = nil
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -54,8 +56,20 @@ struct ActiveRunView: View {
                             .background(Color("Brown-500")).cornerRadius(20)
                             .padding(.bottom,40)
                         
-                        Image("capybara_img")
-                            .resizable().scaledToFit().frame(height: 150)
+                        Image("capybara_img\(currentFrame)")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 150, height: 150)
+                            .onAppear {
+                                if viewModel.isMaximized { startSpriteAnimation() }
+                            }
+                            .onChange(of: viewModel.isMaximized) {
+                                if viewModel.isMaximized {
+                                    startSpriteAnimation()
+                                } else {
+                                    stopSpriteAnimation()
+                                }
+                            }
                         
                         Text(viewModel.formattedPace)
                             .font(.system(size: 30)).foregroundColor(.black)
@@ -74,14 +88,14 @@ struct ActiveRunView: View {
                             .padding(.horizontal, 30).padding(.bottom,20)
                     }
                     .transition(.opacity)
-                    .onTapGesture {
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                            viewModel.isMaximized.toggle()
-                        }
-                    }
                 }
                 
                 dashboardCard
+            }
+            .onTapGesture {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                    viewModel.isMaximized.toggle()
+                }
             }
             .ignoresSafeArea(.container, edges: .top)
         }
@@ -160,6 +174,22 @@ struct ActiveRunView: View {
             }
         }
         .background(Color.white)
+    }
+    
+    private func startSpriteAnimation() {
+        // Pastikan tidak ada timer yang sedang jalan sebelumnya
+        stopSpriteAnimation()
+        
+        spriteTimer = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { _ in
+            // Logika ganti frame 1 -> 2 -> 1
+            currentFrame = (currentFrame == 1) ? 2 : 1
+        }
+    }
+
+    private func stopSpriteAnimation() {
+        spriteTimer?.invalidate()
+        spriteTimer = nil
+        currentFrame = 1 // Reset ke posisi berdiri normal saat mengecil
     }
 }
 

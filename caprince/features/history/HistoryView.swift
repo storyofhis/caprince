@@ -44,7 +44,7 @@ struct HistoryView: View {
                                     Text("Duration")
                                         .font(.caption)
                                         .foregroundColor(.gray)
-                                    Text(formatTime(run.duration))
+                                    Text(formatTime(run.timeElapsed))
                                         .font(.system(.body, design: .monospaced))
                                 }
                                 Spacer()
