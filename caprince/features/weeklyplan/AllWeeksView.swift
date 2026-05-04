@@ -10,19 +10,41 @@ import SwiftUI
 struct ViewAllWeeks: View {
     @Environment(\.dismiss) var dismiss
     @State private var weeks: [TrainingWeek] = RunningPlan.beginnerPlans
+    @State private var popupState: WorkoutPopupState? = nil
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 30) {
-                ForEach(weeks.indices, id: \.self) { index in
-                    let isLocked = index > 0 && weeks[index - 1].days.filter({ $0.isCompleted }).count < 2
-                    WeekCardView(week: $weeks[index], isLocked: isLocked)
+        ZStack {
+            ScrollView {
+                VStack(spacing: 30) {
+                    ForEach(weeks.indices, id: \.self) { index in
+                        let isLocked = index > 0 && weeks[index - 1].days.filter({ $0.isCompleted }).count < 2
+                        WeekCardView(week: $weeks[index], popupState: $popupState, isLocked: isLocked)
+                    }
                 }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 40)
             }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 40)
+            .background(Color(red: 0.99, green: 0.99, blue: 0.99)) // TODO: msut be replaced with global background
+            
+            // Custom Popup Overlay
+            if let state = popupState {
+                WorkoutDetailSheet(
+                    weekTitle: state.weekTitle,
+                    day: state.day,
+                    isAvailable: state.isAvailable,
+                    onStart: state.onStart,
+                    onMarkDone: state.onMarkDone,
+                    onDismiss: {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            popupState = nil
+                        }
+                    }
+                )
+                .zIndex(100)
+                .transition(.scale(scale: 0.9).combined(with: .opacity))
+            }
         }
-        .background(Color(red: 0.99, green: 0.99, blue: 0.99)) // TODO: msut be replaced with global background
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: popupState != nil)
         .navigationBarBackButtonHidden(true)
         .toolbar {
             // Back Button

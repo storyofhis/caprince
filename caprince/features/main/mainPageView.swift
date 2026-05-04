@@ -12,10 +12,12 @@ import SwiftUI
 struct mainPageView: View {
     // Sample data for weekly workout plan card
     @State private var sampleWeek = RunningPlan.beginnerPlans[0]
+    @State private var popupState: WorkoutPopupState? = nil
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20){
+        ZStack {
+            ScrollView {
+                VStack(spacing: 20){
                 
                 // Storyline/Widget
                 VStack(alignment: .leading){
@@ -37,7 +39,7 @@ struct mainPageView: View {
                         // Top row
                         HStack{
                             // Steps
-                            // TODO: Nanti ganti foregroundstyle with fill kalau udah ad warnanya di asset!!
+                            // TODO: Nanti ganti foregroundstyle dengan fill kalau udah ad warnanya di asset!!
                             RoundedRectangle(cornerRadius: 10)
                                 .fill(
                                     LinearGradient(
@@ -85,7 +87,6 @@ struct mainPageView: View {
                                 .foregroundStyle(Color(red: 0.39, green: 0.31, blue: 0.23))
                                 .frame(width: 110, height: 130)
                                 .overlay(alignment: .bottom) {
-                                    // Blurred highlight effect matching your design
                                     Circle()
                                         .fill(Color(red: 0.64, green: 0.74, blue: 0.55))
                                         .frame(width: 80, height: 80)
@@ -200,11 +201,31 @@ struct mainPageView: View {
                     }
                     
                     // Week card view
-                    WeekCardView(week: $sampleWeek)
+                    WeekCardView(week: $sampleWeek, popupState: $popupState)
                 }
             }
             .padding(38)
+        } // Closes ScrollView
+            
+        // Custom Popup Overlay
+        if let state = popupState {
+                WorkoutDetailSheet(
+                    weekTitle: state.weekTitle,
+                    day: state.day,
+                    isAvailable: state.isAvailable,
+                    onStart: state.onStart,
+                    onMarkDone: state.onMarkDone,
+                    onDismiss: {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            popupState = nil
+                        }
+                    }
+                )
+                .zIndex(100)
+                .transition(.scale(scale: 0.9).combined(with: .opacity))
+            }
         }
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: popupState != nil)
     }
 }
 
@@ -213,3 +234,4 @@ struct mainPageView: View {
         mainPageView()
     }
 }
+

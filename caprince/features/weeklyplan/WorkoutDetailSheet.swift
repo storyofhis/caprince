@@ -7,81 +7,209 @@
 
 import SwiftUI
 
+struct WorkoutPopupState: Identifiable {
+    let id = UUID()
+    let weekTitle: String
+    let day: TrainingDay
+    let isAvailable: Bool
+    let onStart: () -> Void
+    let onMarkDone: () -> Void
+}
+
 struct WorkoutDetailSheet: View {
+    let weekTitle: String
     let day: TrainingDay
     var isAvailable: Bool
     var onStart: () -> Void
     var onMarkDone: () -> Void
+    var onDismiss: () -> Void
+
     
     var body: some View {
-        VStack(spacing: 24) {
-            Text(day.title)
-                .font(.title)
-                .fontWeight(.bold)
-                .foregroundColor(.primary)
-            
-            Text(day.duration)
-                .font(.body)
-                .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
-            
-            if day.isCompleted {
-                Button {
-                    // Do nothing
-                } label: {
-                    HStack {
-                        Image(systemName: "checkmark")
-                        Text("Completed")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
+        ZStack {
+            // Blur background instead of the black dimming effect
+            Color.clear
+                .background(Color.black.opacity(0.2))
+                .ignoresSafeArea()
+                .onTapGesture {
+                    onDismiss()
                 }
-                .disabled(true)
-            } else if isAvailable {
-                VStack(spacing: 12) {
-                    Button {
-                        onStart()
-                    } label: {
-                        HStack {
-                            Image(systemName: "play.fill")
-                            Text("Start Run")
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.orange)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
-                    }
+            
+            ZStack(alignment: .top) {
+                // Capybara
+                Image("WDS-Capy")
+                    .zIndex(1.0)
+                
+                // Main Card Container
+                VStack(spacing: 0) {
+                    // Space for the capybara to pop out
+                    Spacer().frame(height: 44)
                     
-                    // Temporary test button to easily mark as done
-                    Button {
-                        onMarkDone()
-                    } label: {
-                        Text("Mark as Done (Test)")
-                            .font(.footnote)
-                            .foregroundColor(.blue)
+                    ZStack(alignment: .top) {
+                        // Gray background card
+                        RoundedRectangle(cornerRadius: 30)
+                            // A metallic-ish gray matching the design
+                            .fill(Color(red: 0.75, green: 0.75, blue: 0.75))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 30)
+                                    .stroke(Color.white.opacity(0.8), lineWidth: 2)
+                            )
+                            .frame(width: 268, height: 228) // Exact requested frame
+                        
+                        // Close button (Top Right)
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                onDismiss()
+                            }) {
+                                Image(systemName: "xmark")
+                                    .font(.system(size: 14, weight: .bold))
+                                    .foregroundColor(Color("Brown-600"))
+                                    .frame(width: 28, height: 28)
+                                    .background(Color.white.opacity(0.9))
+                                    .clipShape(Circle())
+                                    .overlay(
+                                        Circle().stroke(Color.white, lineWidth: 1.5)
+                                    )
+                            }
+                            .padding(.top, 12)
+                            .padding(.trailing, 12)
+                        }
+                        .frame(width: 268)
+                        
+                        // Main Content
+                        VStack(spacing: 10) {
+                            // Title
+                            Text("\(weekTitle) \(day.title)")
+                                .font(.system(size: 20, weight: .bold, design: .default))
+                                .foregroundColor(Color("Brown-600"))
+                                .padding(.top, 24) // Space for capybara
+                            
+                            // Bullets
+                            VStack(alignment: .leading, spacing: 4) {
+                                ForEach(formatDurationIntoBullets(day.duration), id: \.self) { bullet in
+                                    HStack(alignment: .top, spacing: 6) {
+                                        Text("•")
+                                            .font(.system(size: 16, weight: .bold))
+                                        Text(bullet.capitalized)
+                                            .font(.system(size: 16, weight: .medium))
+                                    }
+                                    .foregroundColor(Color(red: 0.15, green: 0.15, blue: 0.15))
+                                }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 30)
+                            
+                            Spacer(minLength: 0)
+                            
+                            // Button Group
+                            VStack(spacing: 6) {
+                                if day.isCompleted {
+                                    Button {
+                                        // Do nothing
+                                    } label: {
+                                        Text("Completed")
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                            .frame(width: 120, height: 36)
+                                            .background(Color.green)
+                                            .foregroundColor(.white)
+                                            .cornerRadius(18)
+                                    }
+                                    .disabled(true)
+                                } else if isAvailable {
+                                    Button {
+                                        onStart()
+                                    } label: {
+                                        Text("Go!")
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                            .frame(width: 120, height: 36)
+                                            .background(Color("Brown-500"))
+                                            .foregroundColor(.white)
+                                            .cornerRadius(18)
+                                    }
+                                    
+                                    // Temporary test button
+                                    Button {
+                                        onMarkDone()
+                                    } label: {
+                                        Text("Mark as Done")
+                                            .font(.system(size: 10))
+                                            .foregroundColor(.blue)
+                                    }
+                                } else {
+                                    Button {
+                                        // Do nothing
+                                    } label: {
+                                        Text("Locked")
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                            .frame(width: 120, height: 36)
+                                            .background(Color.gray)
+                                            .foregroundColor(.white)
+                                            .cornerRadius(18)
+                                    }
+                                    .disabled(true)
+                                }
+                            }
+                            .padding(.bottom, 16)
+                        }
+                        .frame(width: 268, height: 228)
                     }
                 }
-            } else {
-                Button {
-                    // Do nothing
-                } label: {
-                    HStack {
-                        Image(systemName: "lock.fill")
-                        Text("Locked")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.gray)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
-                }
-                .disabled(true)
+                
+                // Capybara Image Overlay
+                Image("capybara_crown")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 80, height: 80)
+                    .offset(y: 0)
             }
         }
-        .padding()
     }
+    
+    // Helper to format the long string into clean bullet points
+    private func formatDurationIntoBullets(_ duration: String) -> [String] {
+        if duration == "Race Day!" {
+            return ["Race Day!"]
+        }
+        
+        var result: [String] = []
+        let components = duration.components(separatedBy: " ")
+        var currentBullet = ""
+        
+        for word in components {
+            if word == "&" || word == "+" {
+                if !currentBullet.isEmpty {
+                    result.append(currentBullet.trimmingCharacters(in: .whitespaces))
+                }
+                currentBullet = ""
+            } else if word.lowercased() == "repeat" {
+                if !currentBullet.isEmpty {
+                    result.append(currentBullet.trimmingCharacters(in: .whitespaces))
+                }
+                currentBullet = "Repeat"
+            } else {
+                currentBullet += (currentBullet.isEmpty ? "" : " ") + word
+            }
+        }
+        
+        if !currentBullet.isEmpty {
+            result.append(currentBullet.trimmingCharacters(in: .whitespaces))
+        }
+        
+        return result
+    }
+}
+
+#Preview {
+    WorkoutDetailSheet(
+        weekTitle: "Week 1",
+        day: RunningPlan.beginnerPlans[0].days[0],
+        isAvailable: true,
+        onStart: {},
+        onMarkDone: {},
+        onDismiss: {}
+    )
 }

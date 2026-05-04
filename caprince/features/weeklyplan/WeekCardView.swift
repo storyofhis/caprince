@@ -11,8 +11,14 @@ struct WeekCardView: View {
 
     @State private var navigateToMap = false
     @Binding var week: TrainingWeek
-    @State private var selectedDay: TrainingDay? = nil
+    @Binding var popupState: WorkoutPopupState?
     var isLocked: Bool = false
+    
+    init(week: Binding<TrainingWeek>, popupState: Binding<WorkoutPopupState?>, isLocked: Bool = false) {
+        self._week = week
+        self._popupState = popupState
+        self.isLocked = isLocked
+    }
     
     var progress: CGFloat {
         let completed = week.days.filter { $0.isCompleted }.count
@@ -52,8 +58,22 @@ struct WeekCardView: View {
                             }
                         }
                         .onTapGesture {
-                            selectedDay = day
-                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                            let isAvailable = !isLocked && (day.id == week.days.first(where: { !$0.isCompleted })?.id)
+                            popupState = WorkoutPopupState(
+                                weekTitle: week.title,
+                                day: day,
+                                isAvailable: isAvailable,
+                                onStart: {
+                                    popupState = nil
+                                    navigateToMap = true
+                                },
+                                onMarkDone: {
+                                    if let index = week.days.firstIndex(where: { $0.id == day.id }) {
+                                        week.days[index].isCompleted = true
+                                    }
+                                    popupState = nil
+                                }
+                            )
                         }
                         
                         if index < week.days.count - 1 {
@@ -74,25 +94,8 @@ struct WeekCardView: View {
             .opacity(isLocked ? 0.5 : 1.0)
         }
         .shadow(color: .black.opacity(0.15), radius: 5, x: 0, y: 4)
-        .sheet(item: $selectedDay) { day in
-            let isAvailable = !isLocked && (day.id == week.days.first(where: { !$0.isCompleted })?.id)
-            
-            WorkoutDetailSheet(
-                day: day,
-                isAvailable: isAvailable,
-                onStart: {
-                    // Action when user taps "Start Run" on the sheet
-                    selectedDay = nil
-                    navigateToMap = true
-                },
-                onMarkDone: {
-                    if let index = week.days.firstIndex(where: { $0.id == day.id }) {
-                        week.days[index].isCompleted = true
-                    }
-                    selectedDay = nil
-                }
-            )
-            .presentationDetents([.medium, .large]) // half sheet
+        .navigationDestination(isPresented: $navigateToMap){
+            MainMapView()
         }
     }
     
@@ -116,7 +119,8 @@ struct WeekCardView: View {
 
 #Preview {
     WeekCardView(
-        week: .constant(RunningPlan.beginnerPlans[0])
+        week: .constant(RunningPlan.beginnerPlans[0]),
+        popupState: .constant(nil)
     )
     .padding()
 }
