@@ -6,9 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct FinishRunView: View {
     @ObservedObject var viewModel: RunTrackerViewModel
+    
+    @Environment(\.modelContext) private var context
+    @State private var showHistory = false
     
     var body: some View {
         GeometryReader { geometry in
@@ -31,7 +35,7 @@ struct FinishRunView: View {
                 // Bagianbwh: report
                 VStack(spacing: 20) {
                     
-                    Text("Week 1 Day 1")
+                    Text("Week 1 Day 1") //Placeholder juga
                         .font(.caption)
                         .padding(.top, 30)
                     
@@ -78,21 +82,53 @@ struct FinishRunView: View {
                     
                     Spacer()
                     
-                    Button(action: { viewModel.resetSession() }) {
-                        Text("Continue")
-                            .fontWeight(.bold)
-                            .foregroundColor(.black)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.gray.opacity(0.2))
-                            .cornerRadius(25)
+                    HStack{
+                        
+                        Button(action: { viewModel.resetSession() }) {
+                            Text("Back")
+                                .fontWeight(.bold)
+                                .foregroundColor(.black)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.gray.opacity(0.2))
+                                .cornerRadius(25)
+                        }
+                        .padding(.leading, 10)
+                        .padding(.bottom, 30)
+                        Button(action: {
+                            //record baru
+                            let newRun = RunSession(
+                                programName: "Week 1 Program 1", //placeholder nnti bikin dinamis
+                                timeElapsed: TimeInterval(viewModel.timeElapsed),
+                                distance: viewModel.distance,
+                                averagePace: viewModel.formattedPace
+                            )
+                            
+                            context.insert(newRun)
+                            
+                            showHistory = true
+                            
+                        }) {
+                            Text("Save")
+                                .fontWeight(.bold)
+                                .foregroundColor(.black)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color("Brown-300"))
+                                .cornerRadius(25)
+                        }
+                        .padding(.trailing,10)
+                        .padding(.bottom, 30)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 30)
                 }
                 .background(Color.white)
                 .cornerRadius(30, corners: [.topLeft, .topRight])
                 .offset(y: -20)
+            }
+            .fullScreenCover(isPresented: $showHistory, onDismiss: {
+                
+            }) {
+                HistoryView()
             }
         }
         .ignoresSafeArea()
