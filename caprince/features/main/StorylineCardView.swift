@@ -36,7 +36,6 @@ struct StorylineCardView<Content: View>: View {
                             endPoint: UnitPoint(x: 0.5, y: 1)
                         )
                     )
-                
                 // Content
                 VStack {
                     // Space for Illustrations

@@ -37,6 +37,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5D3CDE2A2FA8391900C2FA90 /* caprinceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = caprinceWidgetExtension.entitlements; sourceTree = "<group>"; };
 		893A7CC02F9B49B400B03FCB /* caprince.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = caprince.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		893A7CD62F9B4A2E00B03FCB /* caprinceWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = caprinceWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		893A7CD82F9B4A2E00B03FCB /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -102,6 +103,7 @@
 		893A7CB72F9B49B400B03FCB = {
 			isa = PBXGroup;
 			children = (
+				5D3CDE2A2FA8391900C2FA90 /* caprinceWidgetExtension.entitlements */,
 				893A7CC22F9B49B400B03FCB /* caprince */,
 				893A7CDC2F9B4A2E00B03FCB /* caprinceWidget */,
 				893A7CD72F9B4A2E00B03FCB /* Frameworks */,
@@ -262,6 +264,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = caprince/caprince.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = FU4TVB538X;
@@ -297,6 +300,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = caprince/caprince.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = FU4TVB538X;
@@ -453,6 +457,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = caprinceWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = FU4TVB538X;
@@ -484,6 +489,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = caprinceWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = FU4TVB538X;
