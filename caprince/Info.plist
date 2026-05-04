@@ -40,6 +40,11 @@
     <!-- ✅ ADD THIS -->
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>This app needs your location to show the map.</string>
+    <!-- HealthKit Permissions -->
+    <key>NSHealthShareUsageDescription</key>
+    <string>Caprince needs access to your Health data to track your daily steps and calories burned.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>Caprince needs access to your Health data to save your completed workouts.</string>
 
 </dict>
 </plist>

@@ -13,6 +13,7 @@ struct mainPageView: View {
     // Sample data for weekly workout plan card
     @State private var sampleWeek = RunningPlan.beginnerPlans[0]
     @State private var popupState: WorkoutPopupState? = nil
+    @StateObject private var viewModel = MainPageViewModel()
     
     var body: some View {
         ZStack {
@@ -67,7 +68,7 @@ struct mainPageView: View {
                                             .foregroundStyle(.white)
                                         
                                         HStack(alignment: .lastTextBaseline) {
-                                            Text("3978")
+                                            Text(viewModel.stepsText)
                                                 .font(.title)
                                                 .fontWeight(.bold)
                                                 .foregroundColor(.white)
@@ -131,7 +132,7 @@ struct mainPageView: View {
                                             .foregroundStyle(.white)
                                         
                                         HStack(alignment: .lastTextBaseline) {
-                                            Text("1056") // Updated to match your image!
+                                            Text(viewModel.caloriesText)
                                                 .font(.title)
                                                 .fontWeight(.bold)
                                                 .foregroundColor(.white)
@@ -226,6 +227,9 @@ struct mainPageView: View {
             }
         }
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: popupState != nil)
+        .onAppear {
+            viewModel.requestHealthData()
+        }
     }
 }
 
