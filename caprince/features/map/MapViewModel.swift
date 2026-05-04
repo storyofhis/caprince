@@ -87,7 +87,7 @@ class RunTrackerViewModel: ObservableObject {
         guard distance > 0.01 else { return "-:--" }
         let totalMinutes = Double(timeElapsed) / 60
         let pace = totalMinutes / distance
-        guard pace < 60 else { return "59:59" } // Cap pace if extremely slow
+        guard pace < 60 else { return "59:59" } //Cap pace
         let m = Int(pace)
         let s = Int((pace - Double(m)) * 60)
         return String(format: "%d:%02d", m, s)
