@@ -2,7 +2,6 @@
 //  RunSession.swift
 //  caprince
 //
-//  Created by Antigravity on 24/04/26.
 //
 
 import Foundation
