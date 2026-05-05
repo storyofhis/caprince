@@ -11,6 +11,6 @@ struct MainMapView: View {
                 ActiveRunView(viewModel: viewModel)
             }
 //        }
-//        .foregroundStyle(.black) 
+//        .foregroundStyle(.black)
     }
 }
