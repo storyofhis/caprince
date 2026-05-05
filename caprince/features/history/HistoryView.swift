@@ -1,164 +1,122 @@
-//
-//  HistoryView.swift
-//  caprince
-//
-//  Created by Antigravity on 24/04/26.
-//
-
 import SwiftUI
 import SwiftData
-import MapKit
-import CoreLocation
 
 struct HistoryView: View {
     @Query(sort: \RunSession.date, order: .reverse) private var runs: [RunSession]
     @Environment(\.dismiss) private var dismiss
-    
-    struct CodableCoordinate: Codable {
-        let lat: Double
-        let lon: Double
-    }
-    
-    private func decodeCoordinates(data: Data?) -> [CLLocationCoordinate2D] {
-        guard let data = data else { return [] }
-        do {
-            let decoded = try JSONDecoder().decode([CodableCoordinate].self, from: data)
-            return decoded.map { CLLocationCoordinate2D(latitude: $0.lat, longitude: $0.lon) }
-        } catch {
-            return []
-        }
-    }
-    
+
     var body: some View {
         NavigationStack {
-            List {
-                if runs.isEmpty {
-                    VStack(alignment: .center, spacing: 12) {
-                        Image(systemName: "figure.walk")
-                            .font(.system(size: 40))
-                            .foregroundColor(.gray)
-                        Text("No runs yet. Go for a run!")
-                            .foregroundColor(.gray)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .listRowBackground(Color.clear)
-                } else {
-                    ForEach(runs) { run in
-                        HStack(alignment: .center, spacing: 16) {
-                            if let routeData = run.routeData, !routeData.isEmpty {
-                                let coords = decodeCoordinates(data: routeData)
-                                if !coords.isEmpty {
-                                    MapPolylineOverlay(coordinates: coords)
-                                        .frame(width: 64, height: 64)
-                                        .cornerRadius(12)
-                                } else {
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .fill(Color.gray.opacity(0.2))
-                                        .frame(width: 64, height: 64)
-                                        .overlay(
-                                            Image(systemName: "map")
-                                                .font(.system(size: 28))
-                                                .foregroundColor(.green)
-                                        )
-                                }
-                            } else {
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color.gray.opacity(0.2))
-                                    .frame(width: 64, height: 64)
-                                    .overlay(
-                                        Image(systemName: "map")
-                                            .font(.system(size: 28))
-                                            .foregroundColor(.green)
-                                    )
-                            }
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text(run.programName)
-                                    .font(.headline)
-                                Text(formatDateAndTime(run.date))
-                                    .font(.subheadline)
+            ZStack {
+                Color(.systemGroupedBackground)
+                    .ignoresSafeArea()
+                
+                ScrollView {
+                    VStack(spacing: 16) {
+                        if runs.isEmpty {
+                            VStack(spacing: 12) {
+                                Image(systemName: "figure.walk")
+                                    .font(.system(size: 40))
                                     .foregroundColor(.gray)
-                                HStack(spacing: 16) {
-                                    Label("\(run.calories, specifier: "%.0f") kcal", systemImage: "flame")
-                                        .font(.caption)
-                                        .foregroundColor(.orange)
-                                    Label(String(format: "%.2f Km", run.distance), systemImage: "leaf")
-                                        .font(.caption)
-                                        .foregroundColor(.green)
-                                    Label("\(run.steps) Steps", systemImage: "figure.walk")
-                                        .font(.caption)
-                                        .foregroundColor(.blue)
-                                }
+                                
+                                Text("No activities yet")
+                                    .foregroundColor(.gray)
                             }
-                            Spacer()
+                            .padding(.top, 100)
+                        } else {
+                            ForEach(runs) { run in
+                                activityCard(run: run)
+                            }
                         }
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(16)
-                        .shadow(color: Color.black.opacity(0.06), radius: 4, x: 0, y: 2)
-                        .padding(.vertical, 6)
-                        .padding(.horizontal, 4)
-                        .listRowBackground(Color.clear)
                     }
+                    .padding()
                 }
             }
-            .background(Color(UIColor.systemGroupedBackground))
-            .navigationTitle("Activities")
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") {
+                ToolbarItem(placement: .principal) {
+                    Text("Activities")
+                        .font(.system(size: 20, weight: .semibold))
+                }
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
                         dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
                     }
                 }
             }
-            .onAppear {
-                print("📊 HistoryView appeared. Total runs: \(runs.count)")
-            }
         }
     }
     
-    private func formatTime(_ time: TimeInterval) -> String {
-        let minutes = Int(time) / 60
-        let seconds = Int(time) % 60
-        return String(format: "%02d:%02d", minutes, seconds)
+    // MARK: - Card View
+    private func activityCard(run: RunSession) -> some View {
+        let wd = weekAndDay(from: run.date)
+        
+        return VStack(alignment: .leading, spacing: 10) {
+            
+            Text("Week \(wd.week) Day \(wd.day)")
+                .font(.headline)
+                .foregroundColor(.brown)
+            
+            HStack(spacing: 6) {
+                Image(systemName: "clock")
+                    .foregroundColor(.gray)
+                
+                Text("\(formatDate(run.date)) | \(formatTimeRange(run.date))")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+            }
+            
+            HStack(spacing: 20) {
+                Label("\(Int(run.calories)) kcal", systemImage: "flame")
+                    .foregroundColor(.green)
+                
+                Label(String(format: "%.1f Km", run.distance), systemImage: "location")
+                    .foregroundColor(.orange)
+                
+                Label("\(run.steps) Steps", systemImage: "figure.walk")
+                    .foregroundColor(.brown)
+            }
+            .font(.caption)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.systemBackground))
+        .cornerRadius(20)
+        .shadow(color: Color.black.opacity(0.06), radius: 6, x: 0, y: 3)
     }
     
-    private func formatDateAndTime(_ date: Date) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "EEE d"
-        return dateFormatter.string(from: date)
-    }
-}
-
-struct MapPolylineOverlay: UIViewRepresentable {
-    let coordinates: [CLLocationCoordinate2D]
-    func makeUIView(context: Context) -> MKMapView {
-        let mapView = MKMapView()
-        mapView.isUserInteractionEnabled = false
-        let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
-        mapView.addOverlay(polyline)
-        mapView.delegate = context.coordinator
-        if let first = coordinates.first {
-            let region = MKCoordinateRegion(center: first, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
-            mapView.setRegion(region, animated: false)
+    // MARK: - Week & Day Logic
+    private func weekAndDay(from date: Date) -> (week: Int, day: Int) {
+        guard let firstDate = runs.last?.date else {
+            return (1, 1)
         }
-        return mapView
+        
+        let calendar = Calendar.current
+        let days = calendar.dateComponents([.day], from: firstDate, to: date).day ?? 0
+        
+        let week = (days / 7) + 1
+        let day = (days % 7) + 1
+        
+        return (week, day)
     }
-    func updateUIView(_ mapView: MKMapView, context: Context) {
-        mapView.removeOverlays(mapView.overlays)
-        let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
-        mapView.addOverlay(polyline)
+    
+    // MARK: - Formatters
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEE d"
+        return formatter.string(from: date)
     }
-    func makeCoordinator() -> Coordinator { Coordinator() }
-    class Coordinator: NSObject, MKMapViewDelegate {
-        func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-            if let polyline = overlay as? MKPolyline {
-                let renderer = MKPolylineRenderer(polyline: polyline)
-                renderer.strokeColor = UIColor.green
-                renderer.lineWidth = 3
-                return renderer
-            }
-            return MKOverlayRenderer()
-        }
+    
+    private func formatTimeRange(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH.mm"
+        
+        let start = formatter.string(from: date)
+        let end = formatter.string(from: date.addingTimeInterval(60 * 60))
+        
+        return "\(start) - \(end)"
     }
 }
 
@@ -167,4 +125,3 @@ struct MapPolylineOverlay: UIViewRepresentable {
         HistoryView()
     }
 }
-
