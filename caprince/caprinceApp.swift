@@ -1,19 +1,35 @@
-//
-//  caprinceApp.swift
-//  caprince
-//
-//  Created by Maula Izza Azizi on 24/04/26.
-//
-
 import SwiftUI
 import SwiftData
 
 @main
 struct caprinceApp: App {
+    
+    let container: ModelContainer
+    
+    init() {
+        do {
+            // Notice how we put BOTH TrainingWeek and RunSession here!
+            container = try ModelContainer(for: TrainingWeek.self, RunSession.self)
+            
+            // 🛑 CHECK: Is the database empty?
+            let descriptor = FetchDescriptor<TrainingWeek>()
+            let existingWeeks = try container.mainContext.fetch(descriptor)
+            
+            if existingWeeks.isEmpty {
+                // 🟢 SEED: If empty, loop through your beginnerPlans and save them!
+                for week in RunningPlan.beginnerPlans {
+                    container.mainContext.insert(week)
+                }
+            }
+        } catch {
+            fatalError("Failed to initialize SwiftData container.")
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: RunSession.self)
+        .modelContainer(container)
     }
 }

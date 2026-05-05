@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ViewAllWeeks: View {
     @Environment(\.dismiss) var dismiss
-    @State private var weeks: [TrainingWeek] = RunningPlan.beginnerPlans
+    @Query(sort: \TrainingWeek.title) var weeks: [TrainingWeek]
+    @Environment(\.modelContext) private var context
     @State private var popupState: WorkoutPopupState? = nil
     
     var body: some View {
@@ -18,7 +20,7 @@ struct ViewAllWeeks: View {
                 VStack(spacing: 30) {
                     ForEach(weeks.indices, id: \.self) { index in
                         let isLocked = index > 0 && weeks[index - 1].days.filter({ $0.isCompleted }).count < 2
-                        WeekCardView(week: $weeks[index], popupState: $popupState, isLocked: isLocked)
+                        WeekCardView(week: weeks[index], popupState: $popupState, isLocked: isLocked)
                     }
                 }
                 .padding(.horizontal, 24)
@@ -69,7 +71,15 @@ struct ViewAllWeeks: View {
 }
 
 #Preview {
-    NavigationStack {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: TrainingWeek.self, configurations: config)
+    
+    for week in RunningPlan.beginnerPlans {
+        container.mainContext.insert(week)
+    }
+
+    return NavigationStack {
         ViewAllWeeks()
     }
+    .modelContainer(container)
 }
