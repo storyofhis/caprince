@@ -6,19 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct WeekCardView: View {
 
     @State private var navigateToMap = false
-    @Binding var week: TrainingWeek
+    @Bindable var week: TrainingWeek
     @Binding var popupState: WorkoutPopupState?
     var isLocked: Bool = false
-    
-    init(week: Binding<TrainingWeek>, popupState: Binding<WorkoutPopupState?>, isLocked: Bool = false) {
-        self._week = week
-        self._popupState = popupState
-        self.isLocked = isLocked
-    }
     
     var progress: CGFloat {
         let completed = week.days.filter { $0.isCompleted }.count
@@ -70,6 +65,7 @@ struct WeekCardView: View {
                                 onMarkDone: {
                                     if let index = week.days.firstIndex(where: { $0.id == day.id }) {
                                         week.days[index].isCompleted = true
+                                        try? week.modelContext?.save()
                                     }
                                     popupState = nil
                                 }
@@ -119,7 +115,7 @@ struct WeekCardView: View {
 
 #Preview {
     WeekCardView(
-        week: .constant(RunningPlan.beginnerPlans[0]),
+        week: RunningPlan.beginnerPlans[0],
         popupState: .constant(nil)
     )
     .padding()

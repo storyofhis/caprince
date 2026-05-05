@@ -8,17 +8,35 @@
 import Foundation
 import SwiftData
 
-struct TrainingDay: Identifiable {
-    let id = UUID()
-    let title: String
-    let duration: String
-    var isCompleted: Bool = false
+@Model // writes database code
+final class TrainingDay: Identifiable {
+    // final class -> trck a single a single instance of a workout to save it
+    var id: UUID
+    var title: String
+    var duration: String
+    var isCompleted: Bool
+    
+    // Swift data class requires an initializer (structs generate an invis init, but class does not)
+    init(id: UUID = UUID(), title: String, duration: String, isCompleted: Bool = false) {
+        self.id = id // membedakan funcs and variables (of the same name)
+        self.title = title
+        self.duration = duration
+        self.isCompleted = isCompleted
+    }
 }
 
-struct TrainingWeek: Identifiable {
-    let id = UUID()
-    let title: String
-    var days: [TrainingDay]
+@Model
+final class TrainingWeek: Identifiable {
+    var id: UUID
+    var title: String
+    // deleting a week = deleting days
+    @Relationship(deleteRule: .cascade) var days: [TrainingDay]
+    
+    init(id: UUID = UUID(), title: String, days: [TrainingDay]) {
+        self.id = id
+        self.title = title
+        self.days = days
+    }
 }
 
 enum RunningPlan {
@@ -73,4 +91,3 @@ enum RunningPlan {
         )
     ]
 }
-
