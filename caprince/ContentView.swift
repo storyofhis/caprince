@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
     @AppStorage("hasSeenOnboarding") var hasSeenOnboarding: Bool = false
@@ -22,5 +23,13 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: TrainingWeek.self, configurations: config)
+    
+    for week in RunningPlan.beginnerPlans {
+        container.mainContext.insert(week)
+    }
+
+    return ContentView()
+        .modelContainer(container)
 }
