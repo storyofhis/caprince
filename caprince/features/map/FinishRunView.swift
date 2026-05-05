@@ -18,6 +18,13 @@ struct FinishRunView: View {
     var stats: UserStats? { userStatsQuery.first }
     @State private var showHistory = false
     
+    private var programName: String {
+        let weekTitle = viewModel.currentWeek?.title ?? ""
+        let dayTitle = viewModel.currentDay?.title ?? ""
+        let dynamicName = "\(weekTitle) \(dayTitle)".trimmingCharacters(in: .whitespaces)
+        return dynamicName.isEmpty ? "Free Run" : dynamicName
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
@@ -39,7 +46,7 @@ struct FinishRunView: View {
                 // Bagianbwh: report
                 VStack(spacing: 20) {
                     
-                    Text("Week 1 Day 1") //Placeholder juga
+                    Text(programName)
                         .font(.caption)
                         .padding(.top, 30)
                     
@@ -55,7 +62,7 @@ struct FinishRunView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 30, height: 30)
-                        Text("Congrats! Your fastest 1 miles ever!")
+                        Text("Congrats! Keep it up until the end!")
                             .font(.footnote)
                             .fontWeight(.medium)
                         Spacer()
@@ -93,9 +100,10 @@ struct FinishRunView: View {
                         }
                         let codableCoords = viewModel.coordinates.map { CodableCoordinate(lat: $0.latitude, lon: $0.longitude) }
                         let routeData = try? JSONEncoder().encode(codableCoords)
+                        let dynamicProgramName = programName
                         
                         let newRun = RunSession(
-                            programName: "Week 1 Program 1",
+                            programName: dynamicProgramName,
                             timeElapsed: TimeInterval(viewModel.timeElapsed),
                             distance: viewModel.distance,
                             averagePace: viewModel.formattedPace,

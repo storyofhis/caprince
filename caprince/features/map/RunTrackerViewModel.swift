@@ -18,6 +18,9 @@ class RunTrackerViewModel: ObservableObject {
     @Published var coordinates: [CLLocationCoordinate2D] = []
     @Published var cameraPosition: MapCameraPosition = .userLocation(followsHeading: true, fallback: .automatic)
     
+    @Published var currentWeek: TrainingWeek?
+    @Published var currentDay: TrainingDay?
+    
     private var timer: Timer?
     private let motionService = MotionService()
     private let locationService = LocationService()
