@@ -27,6 +27,12 @@ struct WeekCardView: View {
         return CGFloat(completed) / CGFloat(week.days.count)
     }
     
+    /// SwiftData @Relationship arrays have no guaranteed order.
+    /// Sort by title ("Day 1", "Day 2", "Day 3") to ensure correct sequence.
+    var sortedDays: [TrainingDay] {
+        week.days.sorted { $0.title < $1.title }
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             
@@ -42,10 +48,10 @@ struct WeekCardView: View {
             ZStack {
                 
                 HStack(spacing: 0) {
-                    ForEach(Array(week.days.enumerated()), id: \.element.id) { index, day in
+                    ForEach(Array(sortedDays.enumerated()), id: \.element.id) { index, day in
                         
                         // Circle
-                        let isCurrent = !isLocked && (day.id == week.days.first(where: { !$0.isCompleted })?.id)
+                        let isCurrent = !isLocked && (day.id == sortedDays.first(where: { !$0.isCompleted })?.id)
                         let circleSize: CGFloat = isCurrent ? 70 : 60
                         ZStack {
                             Circle()
@@ -66,30 +72,36 @@ struct WeekCardView: View {
                         .frame(width: 72, height: 72)
                         .shadow(color: Color("Brown-500").opacity(isCurrent ? 0.5 : 0), radius: 8, x: 0, y: 4)
                         .onTapGesture {
-                            let isAvailable = !isLocked && (day.id == week.days.first(where: { !$0.isCompleted })?.id)
-                            popupState = WorkoutPopupState(
-                                weekTitle: week.title,
-                                day: day,
-                                isAvailable: isAvailable,
-                                onStart: {
-                                    popupState = nil
-                                    selectedDay = day
-                                    navigateToMap = true
-                                },
-                                onMarkDone: {
-                                    if let index = week.days.firstIndex(where: { $0.id == day.id }) {
-                                        week.days[index].isCompleted = true
-                                        try? week.modelContext?.save()
-                                        // Update UserStats program progress
-                                        stats?.recordDayCompleted(allWeeks: allWeeks)
-                                        try? context.save()
+                            let isAvailable = !isLocked && (day.id == sortedDays.first(where: { !$0.isCompleted })?.id)
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                popupState = WorkoutPopupState(
+                                    weekTitle: week.title,
+                                    day: day,
+                                    isAvailable: isAvailable,
+                                    onStart: {
+                                        withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                            popupState = nil
+                                        }
+                                        selectedDay = day
+                                        navigateToMap = true
+                                    },
+                                    onMarkDone: {
+                                        if let index = week.days.firstIndex(where: { $0.id == day.id }) {
+                                            week.days[index].isCompleted = true
+                                            try? week.modelContext?.save()
+                                            // Update UserStats program progress
+                                            stats?.recordDayCompleted(allWeeks: allWeeks)
+                                            try? context.save()
+                                        }
+                                        withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                            popupState = nil
+                                        }
                                     }
-                                    popupState = nil
-                                }
-                            )
+                                )
+                            }
                         }
                         
-                        if index < week.days.count - 1 {
+                        if index < sortedDays.count - 1 {
                             HStack(spacing: 6) {
                                 Circle().frame(width: 6, height: 6)
                                 Circle().frame(width: 6, height: 6)
@@ -131,11 +143,11 @@ struct WeekCardView: View {
         }
         
         // Current actionable circle
-        if index == week.days.firstIndex(where: { !$0.isCompleted }) {
+        if index == sortedDays.firstIndex(where: { !$0.isCompleted }) {
             return Color("Brown-600")
         }
         
-        // Unlocked but not yet the current one (future days in an unlocked week)
+        // Unlocked but not yet the current one
         return Color("Brown-200")
     }
 }

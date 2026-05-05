@@ -237,10 +237,13 @@ struct mainPageView: View {
                     onStart: state.onStart,
                     onMarkDone: state.onMarkDone,
                     onDismiss: {
-                        popupState = nil
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                            popupState = nil
+                        }
                     }
                 )
                 .zIndex(100)
+                .transition(.move(edge: .bottom))
             }
         }
     }
