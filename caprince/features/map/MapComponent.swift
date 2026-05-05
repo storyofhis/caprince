@@ -25,24 +25,7 @@ struct MapComponent: View {
         
         .mapControlVisibility(.hidden)
         
-        //button back to center
-        .overlay(alignment: .topTrailing) {
-            Button(action: {
-                withAnimation(.easeInOut) {
-                    cameraPosition = .userLocation(followsHeading: true, fallback: .automatic)
-                }
-            }) {
-                Image(systemName: "location.fill")
-                    .font(.title3)
-                    .foregroundColor(.black)
-                    .padding(10)
-                    .background(Color.white)
-                    .clipShape(Circle())
-                    .shadow(color: .black.opacity(0.15), radius: 5, x: 0, y: 3)
-            }
-            .padding(.trailing, 24)
-            .padding(.top, 75)
-        }
+        
     }
 }
 
