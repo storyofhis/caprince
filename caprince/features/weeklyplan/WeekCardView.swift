@@ -15,6 +15,12 @@ struct WeekCardView: View {
     @Binding var popupState: WorkoutPopupState?
     var isLocked: Bool = false
     
+    // Needed to update UserStats after marking a day done
+    @Environment(\.modelContext) private var context
+    @Query var allWeeks: [TrainingWeek]
+    @Query var userStatsQuery: [UserStats]
+    var stats: UserStats? { userStatsQuery.first }
+    
     var progress: CGFloat {
         let completed = week.days.filter { $0.isCompleted }.count
         return CGFloat(completed) / CGFloat(week.days.count)
@@ -66,6 +72,9 @@ struct WeekCardView: View {
                                     if let index = week.days.firstIndex(where: { $0.id == day.id }) {
                                         week.days[index].isCompleted = true
                                         try? week.modelContext?.save()
+                                        // Update UserStats program progress
+                                        stats?.recordDayCompleted(allWeeks: allWeeks)
+                                        try? context.save()
                                     }
                                     popupState = nil
                                 }
