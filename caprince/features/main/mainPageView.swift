@@ -12,7 +12,11 @@ import SwiftData
 
 struct mainPageView: View {
     @Query(sort: \TrainingWeek.title) var weeks: [TrainingWeek]
+    @Query var userStatsQuery: [UserStats]
     @State private var popupState: WorkoutPopupState? = nil
+    
+    // Safely access the single UserStats singleton
+    var stats: UserStats? { userStatsQuery.first }
     
     var body: some View {
         ZStack {
@@ -25,7 +29,7 @@ struct mainPageView: View {
                         .font(Font.title2.bold())
                         .foregroundStyle(Color(red: 0.39, green: 0.31, blue: 0.23))
                     
-                    StorylineCardView()
+                    StorylineCardView(progress: stats?.programProgress ?? 0)
                 }
                 
                 // Weekly Report
