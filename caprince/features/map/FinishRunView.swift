@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import CoreLocation
 
 struct FinishRunView: View {
     @ObservedObject var viewModel: RunTrackerViewModel
@@ -83,44 +84,38 @@ struct FinishRunView: View {
                     
                     Spacer()
                     
-                    HStack{
+                    Button(action: {
+                        struct CodableCoordinate: Codable {
+                            let lat: Double
+                            let lon: Double
+                        }
+                        let codableCoords = viewModel.coordinates.map { CodableCoordinate(lat: $0.latitude, lon: $0.longitude) }
+                        let routeData = try? JSONEncoder().encode(codableCoords)
                         
-                        Button(action: { viewModel.resetSession() }) {
-                            Text("Back")
-                                .fontWeight(.bold)
-                                .foregroundColor(.black)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.gray.opacity(0.2))
-                                .cornerRadius(25)
-                        }
-                        .padding(.leading, 10)
-                        .padding(.bottom, 30)
-                        Button(action: {
-                            //record baru
-                            let newRun = RunSession(
-                                programName: "Week 1 Program 1", //placeholder nnti bikin dinamis
-                                timeElapsed: TimeInterval(viewModel.timeElapsed),
-                                distance: viewModel.distance,
-                                averagePace: viewModel.formattedPace
-                            )
-                            
-                            context.insert(newRun)
-                            
-                            showHistory = true
-                            
-                        }) {
-                            Text("Save")
-                                .fontWeight(.bold)
-                                .foregroundColor(.black)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color("Brown-300"))
-                                .cornerRadius(25)
-                        }
-                        .padding(.trailing,10)
-                        .padding(.bottom, 30)
+                        let newRun = RunSession(
+                            programName: "Week 1 Program 1",
+                            timeElapsed: TimeInterval(viewModel.timeElapsed),
+                            distance: viewModel.distance,
+                            averagePace: viewModel.formattedPace,
+                            steps: Int(viewModel.distance * 1300),
+                            calories: Double(viewModel.distance * 65),
+                            routeData: routeData
+                        )
+                        
+                        context.insert(newRun)
+                        showHistory = true
+                        
+                    }) {
+                        Text("Continue")
+                            .fontWeight(.bold)
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color("Brown-300"))
+                            .cornerRadius(25)
                     }
+                    .padding(.horizontal, 20) // equal spacing left & right
+                    .padding(.bottom, 30)
                 }
                 .background(Color.white)
                 .cornerRadius(30, corners: [.topLeft, .topRight])
@@ -158,6 +153,4 @@ struct RoundedCorner: Shape {
     
     return FinishRunView(viewModel: dummyViewModel, onRunComplete: {})
 }
-
-
 
