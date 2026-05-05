@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftData
+import WidgetKit
 
 @Model
 final class UserStats {
@@ -90,6 +91,26 @@ final class UserStats {
         totalDaysCompleted = completedDays
         totalWeeksCompleted = completedWeeks
         programProgress = Double(completedDays) / Double(UserStats.totalProgramDays)
+        
+        // Sync progress to Widget via App Group
+        var perWeekArray = [Int]()
+        for week in allWeeks {
+            perWeekArray.append(week.days.filter { $0.isCompleted }.count)
+        }
+        // Ensure it has exactly 6 items as expected by the widget
+        while perWeekArray.count < 6 { perWeekArray.append(0) }
+        
+        let progress = StorylineProgress(perWeekCompleted: Array(perWeekArray.prefix(6)))
+        if let data = try? JSONEncoder().encode(progress),
+           let defaults = UserDefaults(suiteName: "group.com.appleacademy.caprince.share") {
+            defaults.set(data, forKey: "storyline.progress")
+            WidgetCenter.shared.reloadTimelines(ofKind: "caprinceWidget")
+        }
     }
 
+}
+
+// Shared model to serialize data for the Widget
+struct StorylineProgress: Codable, Equatable {
+    var perWeekCompleted: [Int]
 }

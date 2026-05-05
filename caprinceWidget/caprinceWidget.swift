@@ -31,7 +31,7 @@ struct StorylineProgress: Codable, Equatable {
 
 // Key and App Group placeholder. Replace the group id with your real App Group identifier.
 
-fileprivate let kStorylineUserDefaultsSuite = "com.appleacademy.caprince${DEVELOPMENT_TEAM}"
+fileprivate let kStorylineUserDefaultsSuite = "group.com.appleacademy.caprince.share"
 
 fileprivate let kStorylineKey = "storyline.progress"
 
