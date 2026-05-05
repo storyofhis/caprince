@@ -8,6 +8,34 @@
 import WidgetKit
 import SwiftUI
 
+<<<<<<< Updated upstream
+=======
+// Simple model to represent storyline progress: 6 weeks × 3 workouts per week.
+struct StorylineProgress: Codable, Equatable {
+    // perWeekCompleted[i] is number of workouts completed in week i (0..3)
+    var perWeekCompleted: [Int] // expected length 6
+    
+    static func `default`() -> StorylineProgress {
+        StorylineProgress(perWeekCompleted: [0,0,0,0,0,0])
+    }
+    
+    var totalCompleted: Int { perWeekCompleted.reduce(0, +) }
+    var totalWorkouts: Int { perWeekCompleted.count * 3 }
+    
+    // current week (1-based): first week that is not fully complete, or last week
+    var currentWeekIndex: Int {
+        for (i, v) in perWeekCompleted.enumerated() {
+            if v < 3 { return i }
+        }
+        return max(0, perWeekCompleted.count - 1)
+    }
+}
+
+// Key and App Group placeholder. Replace the group id with your real App Group identifier.
+fileprivate let kStorylineUserDefaultsSuite = "com.appleacademy.caprince${DEVELOPMENT_TEAM}"
+fileprivate let kStorylineKey = "storyline.progress"
+
+>>>>>>> Stashed changes
 struct Provider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(date: Date(), configuration: ConfigurationAppIntent())

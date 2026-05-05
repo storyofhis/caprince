@@ -16,7 +16,7 @@ struct ContentView: View {
                 mainPageView()
             }
         } else {
-            MainMapView()
+            OnboardingView()
         }
     }
 }

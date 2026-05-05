@@ -35,16 +35,12 @@ struct ViewAllWeeks: View {
                     onStart: state.onStart,
                     onMarkDone: state.onMarkDone,
                     onDismiss: {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                            popupState = nil
-                        }
+                        popupState = nil
                     }
                 )
                 .zIndex(100)
-                .transition(.scale(scale: 0.9).combined(with: .opacity))
             }
         }
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: popupState != nil)
         .navigationBarBackButtonHidden(true)
         .toolbar {
             // Back Button
