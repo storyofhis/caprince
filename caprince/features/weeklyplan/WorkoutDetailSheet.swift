@@ -27,9 +27,9 @@ struct WorkoutDetailSheet: View {
     
     var body: some View {
         ZStack {
-            // Blur background instead of the black dimming effect
+            // Very subtle white/blur overlay instead of heavy blur or dark black
             Color.clear
-                .background(Color.black.opacity(0.2))
+                .background(Color.white.opacity(0.3))
                 .ignoresSafeArea()
                 .onTapGesture {
                     onDismiss()
@@ -46,13 +46,14 @@ struct WorkoutDetailSheet: View {
                     Spacer().frame(height: 44)
                     
                     ZStack(alignment: .top) {
-                        // Gray background card
+                        // Glassmorphism / White card background
                         RoundedRectangle(cornerRadius: 30)
-                            // A metallic-ish gray matching the design
-                            .fill(Color(red: 0.75, green: 0.75, blue: 0.75))
+                            .fill(Color.white.opacity(0.95))
+                            .background(.ultraThinMaterial)
+                            .clipShape(RoundedRectangle(cornerRadius: 30))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 30)
-                                    .stroke(Color.white.opacity(0.8), lineWidth: 2)
+                                    .stroke(Color.white, lineWidth: 1)
                             )
                             .frame(width: 268, height: 228) // Exact requested frame
                         

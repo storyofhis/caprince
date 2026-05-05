@@ -10,7 +10,7 @@ import SwiftUI
 import WidgetKit
 
 struct caprinceWidgetControl: ControlWidget {
-    static let kind: String = "com.appleacademy.caprince.caprinceWidget"
+    static let kind: String = "com.appleacademy.caprince${DEVELOPMENT_TEAM}.caprinceWidget1"
 
     var body: some ControlWidgetConfiguration {
         AppIntentControlConfiguration(

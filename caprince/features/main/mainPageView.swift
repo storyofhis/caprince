@@ -8,12 +8,11 @@
 // TODO: Fix skeleton, make it less hardcodey
 
 import SwiftUI
+import SwiftData
 
 struct mainPageView: View {
-    // Sample data for weekly workout plan card
-    @State private var sampleWeek = RunningPlan.beginnerPlans[0]
+    @Query(sort: \TrainingWeek.title) var weeks: [TrainingWeek]
     @State private var popupState: WorkoutPopupState? = nil
-    @StateObject private var viewModel = MainPageViewModel()
     
     var body: some View {
         ZStack {
@@ -68,7 +67,7 @@ struct mainPageView: View {
                                             .foregroundStyle(.white)
                                         
                                         HStack(alignment: .lastTextBaseline) {
-                                            Text(viewModel.stepsText)
+                                            Text("3978")
                                                 .font(.title)
                                                 .fontWeight(.bold)
                                                 .foregroundColor(.white)
@@ -132,7 +131,7 @@ struct mainPageView: View {
                                             .foregroundStyle(.white)
                                         
                                         HStack(alignment: .lastTextBaseline) {
-                                            Text(viewModel.caloriesText)
+                                            Text("1056") // Updated to match your image!
                                                 .font(.title)
                                                 .fontWeight(.bold)
                                                 .foregroundColor(.white)
@@ -202,7 +201,9 @@ struct mainPageView: View {
                     }
                     
                     // Week card view
-                    WeekCardView(week: $sampleWeek, popupState: $popupState)
+                    if let firstWeek = weeks.first {
+                        WeekCardView(week: firstWeek, popupState: $popupState)
+                    }
                 }
             }
             .padding(38)
@@ -217,25 +218,26 @@ struct mainPageView: View {
                     onStart: state.onStart,
                     onMarkDone: state.onMarkDone,
                     onDismiss: {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                            popupState = nil
-                        }
+                        popupState = nil
                     }
                 )
                 .zIndex(100)
-                .transition(.scale(scale: 0.9).combined(with: .opacity))
             }
-        }
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: popupState != nil)
-        .onAppear {
-            viewModel.requestHealthData()
         }
     }
 }
 
 #Preview {
-    NavigationStack {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: TrainingWeek.self, configurations: config)
+    
+    for week in RunningPlan.beginnerPlans {
+        container.mainContext.insert(week)
+    }
+
+    return NavigationStack {
         mainPageView()
     }
+    .modelContainer(container)
 }
 
