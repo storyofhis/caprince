@@ -135,7 +135,7 @@ struct mainPageView: View {
                                             .foregroundStyle(.white)
                                         
                                         HStack(alignment: .lastTextBaseline) {
-                                            Text("1056") // Updated to match your image!
+                                            Text(String(format: "%.0f", stats?.totalCaloriesBurned ?? 0))
                                                 .font(.title)
                                                 .fontWeight(.bold)
                                                 .foregroundColor(.white)
@@ -169,7 +169,7 @@ struct mainPageView: View {
                                             .foregroundStyle(.white)
                                         
                                         HStack(alignment: .lastTextBaseline) {
-                                            Text("2.7")
+                                            Text(String(format: "%.1f", stats?.totalDistanceKm ?? 0))
                                                 .font(.title)
                                                 .fontWeight(.bold)
                                                 .foregroundColor(.white)

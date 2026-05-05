@@ -14,6 +14,8 @@ struct FinishRunView: View {
     var onRunComplete: () -> Void
     
     @Environment(\.modelContext) private var context
+    @Query var userStatsQuery: [UserStats]
+    var stats: UserStats? { userStatsQuery.first }
     @State private var showHistory = false
     
     var body: some View {
@@ -103,6 +105,15 @@ struct FinishRunView: View {
                         )
                         
                         context.insert(newRun)
+                        
+                        // Update cumulative UserStats
+                        stats?.recordRun(
+                            distanceKm: viewModel.distance,
+                            calories: Double(viewModel.distance * 65),
+                            durationSeconds: TimeInterval(viewModel.timeElapsed)
+                        )
+                        try? context.save()
+                        
                         showHistory = true
                         
                     }) {
