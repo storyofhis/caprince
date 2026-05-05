@@ -10,6 +10,7 @@ import SwiftData
 
 struct FinishRunView: View {
     @ObservedObject var viewModel: RunTrackerViewModel
+    var onRunComplete: () -> Void
     
     @Environment(\.modelContext) private var context
     @State private var showHistory = false
@@ -126,7 +127,7 @@ struct FinishRunView: View {
                 .offset(y: -20)
             }
             .fullScreenCover(isPresented: $showHistory, onDismiss: {
-                
+                    onRunComplete()
             }) {
                 HistoryView()
             }
@@ -155,7 +156,7 @@ struct RoundedCorner: Shape {
     dummyViewModel.distance = 5.24 // Contoh jarak 5 KM
     dummyViewModel.timeElapsed = 1800 // Contoh waktu 30 menit
     
-    return FinishRunView(viewModel: dummyViewModel)
+    return FinishRunView(viewModel: dummyViewModel, onRunComplete: {})
 }
 
 

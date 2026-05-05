@@ -267,7 +267,7 @@
 				CODE_SIGN_ENTITLEMENTS = caprince/caprince.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = FU4TVB538X;
+				DEVELOPMENT_TEAM = MABNSMHA8L;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = caprince/Info.plist;
@@ -307,7 +307,7 @@
 				CODE_SIGN_ENTITLEMENTS = caprince/caprince.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = FU4TVB538X;
+				DEVELOPMENT_TEAM = MABNSMHA8L;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = caprince/Info.plist;
@@ -468,7 +468,7 @@
 				CODE_SIGN_ENTITLEMENTS = caprinceWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = FU4TVB538X;
+				DEVELOPMENT_TEAM = MABNSMHA8L;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = caprinceWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = caprinceWidget;
@@ -500,7 +500,7 @@
 				CODE_SIGN_ENTITLEMENTS = caprinceWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = FU4TVB538X;
+				DEVELOPMENT_TEAM = MABNSMHA8L;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = caprinceWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = caprinceWidget;

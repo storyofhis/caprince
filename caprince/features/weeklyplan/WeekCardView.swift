@@ -11,6 +11,7 @@ import SwiftData
 struct WeekCardView: View {
 
     @State private var navigateToMap = false
+    @State private var selectedDay: TrainingDay? = nil
     @Bindable var week: TrainingWeek
     @Binding var popupState: WorkoutPopupState?
     var isLocked: Bool = false
@@ -60,6 +61,7 @@ struct WeekCardView: View {
                                 isAvailable: isAvailable,
                                 onStart: {
                                     popupState = nil
+                                    selectedDay = day
                                     navigateToMap = true
                                 },
                                 onMarkDone: {
@@ -91,7 +93,15 @@ struct WeekCardView: View {
         }
         .shadow(color: .black.opacity(0.15), radius: 5, x: 0, y: 4)
         .navigationDestination(isPresented: $navigateToMap){
-            MainMapView()
+            MainMapView(onRunComplete: {
+                // Find the exact day and complete it
+                if let day = selectedDay, let index = week.days.firstIndex(where: { $0.id == day.id }) {
+                    week.days[index].isCompleted = true
+                    try? week.modelContext?.save()
+                }
+                // Dismiss the map view
+                navigateToMap = false
+            })
         }
     }
     
