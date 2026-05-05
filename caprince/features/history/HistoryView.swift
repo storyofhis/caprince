@@ -51,11 +51,9 @@ struct HistoryView: View {
     
     // MARK: - Card View
     private func activityCard(run: RunSession) -> some View {
-        let wd = weekAndDay(from: run.date)
-        
         return VStack(alignment: .leading, spacing: 10) {
             
-            Text("Week \(wd.week) Day \(wd.day)")
+            Text(run.programName.isEmpty ? "Free Run" : run.programName)
                 .font(.headline)
                 .foregroundColor(.brown)
             
@@ -87,21 +85,7 @@ struct HistoryView: View {
         .shadow(color: Color.black.opacity(0.06), radius: 6, x: 0, y: 3)
     }
     
-    // MARK: - Week & Day Logic
-    private func weekAndDay(from date: Date) -> (week: Int, day: Int) {
-        guard let firstDate = runs.last?.date else {
-            return (1, 1)
-        }
-        
-        let calendar = Calendar.current
-        let days = calendar.dateComponents([.day], from: firstDate, to: date).day ?? 0
-        
-        let week = (days / 7) + 1
-        let day = (days % 7) + 1
-        
-        return (week, day)
-    }
-    
+
     // MARK: - Formatters
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()

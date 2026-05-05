@@ -10,6 +10,9 @@ import MapKit
 
 struct ActiveRunView: View {
     @ObservedObject var viewModel: RunTrackerViewModel
+    var trainingDay: TrainingDay?
+    
+    @State private var timerManager = WorkoutTimerManager()
     @State private var currentFrame = 1
     @State private var spriteTimer: Timer? = nil
     
@@ -47,9 +50,10 @@ struct ActiveRunView: View {
                 // 1. HEADER
                 ZStack {
                     // Teks di tengah persis
-                    Text(viewModel.currentActivity)
+                    Text(trainingDay != nil ? (timerManager.currentStep?.activity.rawValue.uppercased() ?? (timerManager.isFinished ? "COMPLETE" : "GET READY")) : viewModel.currentActivity)
                         .font(.subheadline)
-                        .fontWeight(.semibold)
+                        .fontWeight(.bold)
+                        .foregroundColor(trainingDay != nil && timerManager.currentStep?.activity == .run ? Color("Brown-500") : Color("green-400"))
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
                         .background(Color.white.opacity(0.9))
@@ -86,9 +90,30 @@ struct ActiveRunView: View {
                     VStack {
                         Spacer()
                         
-                        Text(viewModel.formattedTime)
-                            .font(.system(size: 60)).foregroundColor(.black)
-                            .padding(.horizontal, 30)
+                        if trainingDay != nil {
+                            // Interval Timer
+                            Text(timerManager.formattedTime)
+                                .font(.system(size: 80, weight: .bold, design: .rounded))
+                                .foregroundColor((timerManager.currentStep?.activity == .run) ? Color("Brown-500") : Color("green-400"))
+                                .padding(.horizontal, 30)
+                            
+                            Text("Interval Time Remaining")
+                                .font(.system(size: 16))
+                                .foregroundColor(.black.opacity(0.6))
+                                .padding(.bottom, 10)
+                            
+                            // Small Total Time
+                            HStack(spacing: 4) {
+                                Text("Total Time:")
+                                    .font(.system(size: 14)).foregroundColor(.black.opacity(0.6))
+                                Text(viewModel.formattedTime)
+                                    .font(.system(size: 14, weight: .semibold)).foregroundColor(.black)
+                            }
+                        } else {
+                            Text(viewModel.formattedTime)
+                                .font(.system(size: 60)).foregroundColor(.black)
+                                .padding(.horizontal, 30)
+                        }
                         
                         ZStack { // animasi capy
                             //LAPISAN BG
@@ -145,6 +170,28 @@ struct ActiveRunView: View {
         }
         .animation(.spring(), value: viewModel.isMaximized)
         .animation(.easeInOut, value: viewModel.sessionState)
+        .onAppear {
+            if let day = trainingDay {
+                timerManager.loadSteps(day.steps)
+            }
+        }
+        .onChange(of: viewModel.sessionState) { _, newState in
+            if trainingDay != nil {
+                switch newState {
+                case .running:
+                    timerManager.start()
+                case .paused:
+                    timerManager.pause()
+                case .finished, .idle:
+                    timerManager.stop()
+                }
+            }
+        }
+        .onChange(of: timerManager.isFinished) { _, isFinished in
+            if isFinished && viewModel.sessionState == .running {
+                viewModel.stopSession()
+            }
+        }
     }
     
     
@@ -176,13 +223,18 @@ struct ActiveRunView: View {
             
             
             // Stats
-            HStack{
+            HStack(spacing: 12) {
                 if !viewModel.isMaximized {
-                    StatView(title: "Time", value: viewModel.formattedTime)
-                    StatView(title: "Avg. pace(/km)", value: viewModel.formattedPace)
-                    StatView(title: "Distance (km)", value: String(format: "%.2f", viewModel.distance))
+                    StatView(title: "Avg. Pace", value: viewModel.formattedPace)
+
+                    if trainingDay != nil {
+                        StatView(title: "Interval", value: timerManager.formattedTime)
+                    }
+//                    StatView(title: "Time", value: viewModel.formattedTime)
+                    StatView(title: "Dist(km)", value: String(format: "%.2f", viewModel.distance))
                 }
             }
+            .padding(.horizontal, 10)
             
             
             // Controls
@@ -248,5 +300,5 @@ struct ActiveRunView: View {
 }
 
 #Preview {
-    ActiveRunView(viewModel: RunTrackerViewModel())
+    ActiveRunView(viewModel: RunTrackerViewModel(), trainingDay: nil)
 }
