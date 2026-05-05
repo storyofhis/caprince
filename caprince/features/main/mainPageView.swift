@@ -18,6 +18,13 @@ struct mainPageView: View {
     // Safely access the single UserStats singleton
     var stats: UserStats? { userStatsQuery.first }
     
+    /// The currently active week:
+    /// - The first week that is not fully completed (not all 3 days done)
+    /// - Falls back to the last week if everything is completed
+    var activeWeek: TrainingWeek? {
+        weeks.first(where: { !$0.days.allSatisfy { $0.isCompleted } }) ?? weeks.last
+    }
+    
     var body: some View {
         ZStack {
             ScrollView {
@@ -204,9 +211,9 @@ struct mainPageView: View {
                         }
                     }
                     
-                    // Week card view
-                    if let firstWeek = weeks.first {
-                        WeekCardView(week: firstWeek, popupState: $popupState)
+                    // Week card view — shows the current active week
+                    if let currentWeek = activeWeek {
+                        WeekCardView(week: currentWeek, popupState: $popupState)
                     }
                 }
             }
