@@ -41,37 +41,59 @@ struct StorylineCardView<Content: View>: View {
                     // Space for Illustrations
                     illustration
                     
-                    // Progress Bar Section
-                    GeometryReader { barGeometry in
+                    GeometryReader { trackGeo in
+                        let padding: CGFloat = 24
+                        let actorSize: CGFloat = 48
+                        let castleSize: CGFloat = 60
+                        let lineHeight: CGFloat = 10
+                        let prog = max(0, min(1, progress))
+                        let trackLeft = padding
+                        let castleX = trackGeo.size.width - padding - castleSize / 2
+                        let trackWidth = castleX - trackLeft
+                        let actorMinX = trackLeft + actorSize / 2
+                        let actorMaxX = castleX - actorSize / 2 - 6
+                        let actorCenterX = actorMinX + (actorMaxX - actorMinX) * prog
+                        let filledWidth = max(0, actorCenterX - trackLeft)
+                        let lineY: CGFloat = 56
+
                         ZStack(alignment: .leading) {
-                            // Background Track (Light)
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color(red: 0.87, green: 0.89, blue: 0.85).opacity(0.8))
-                                .frame(height: 10)
-                            
-                            // Filled Track
-                            RoundedRectangle(cornerRadius: 8)
+                            Capsule()
+                                .fill(Color(red: 0.87, green: 0.89, blue: 0.85))
+                                .frame(width: trackWidth, height: lineHeight)
+                                .position(x: trackGeo.size.width / 2 - padding / 2, y: lineY)
+
+                            Capsule()
                                 .fill(progressColor)
-                                // Scale width based on progress (clamped between 0 and 1)
-                                .frame(width: barGeometry.size.width * max(0, min(1, progress)), height: 10)
-                                // Smooth animation whenever progress changes
-                                .animation(.spring(response: 0.5, dampingFraction: 0.8), value: progress)
+                                .frame(width: filledWidth, height: lineHeight)
+                                .position(x: trackLeft + filledWidth / 2, y: lineY)
+                                .animation(.easeInOut(duration: 0.5), value: progress)
+
+                            Image("castle")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: castleSize, height: castleSize)
+                                .position(x: castleX, y: lineY - 25)
+
+                            Image("actorWidget")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: actorSize, height: actorSize)
+                                .position(x: actorCenterX, y: lineY - 4)
+                                .animation(.easeInOut(duration: 0.5), value: progress)
                         }
                     }
-                    .frame(height: 10) // Fixed height for the bar itself
-                    .padding(.horizontal, 24) // Indent bar from edges
-                    
-                    // Step/Section Numbers aligned underneath
-                    HStack {
-                        ForEach(1...totalSteps, id: \.self) { step in
-                            Text("\(step)")
-                                .font(.headline)
-                                .fontWeight(.bold)
-                                .foregroundStyle(Color(red: 0.39, green: 0.31, blue: 0.23)) // Brand Brown
-                                .frame(maxWidth: .infinity)
-                        }
-                    }
-                    .padding(.horizontal, 8)
+                    .frame(height: 110)
+
+//                    HStack {
+//                        ForEach(1...totalSteps, id: \.self) { step in
+//                            Text("\(step)")
+//                                .font(.caption)
+//                                .fontWeight(.semibold)
+//                                .foregroundStyle(Color(red: 0.39, green: 0.31, blue: 0.23))
+//                                .frame(maxWidth: .infinity)
+//                        }
+//                    }
+//                    .padding(.horizontal, 24)
                 }
                 .padding(.bottom, 20)
             }
