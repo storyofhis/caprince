@@ -43,6 +43,15 @@ final class UserStats {
         return (totalDurationSeconds / 60.0) / totalDistanceKm
     }
 
+    /// Average pace formatted as "MM:SS /km" for display in the UI.
+    /// Returns "--:--" if no runs have been completed yet.
+    var formattedAveragePace: String {
+        guard let pace = averagePaceMinPerKm, pace < 60 else { return "--:--" }
+        let minutes = Int(pace)
+        let seconds = Int((pace - Double(minutes)) * 60)
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
+
     /// Total program days available. Update this if the plan ever changes.
     static let totalProgramDays: Int = 18 // 6 weeks × 3 days
 
