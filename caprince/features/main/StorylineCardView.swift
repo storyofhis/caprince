@@ -51,7 +51,7 @@ struct StorylineCardView<Content: View>: View {
                         let castleX = trackGeo.size.width - padding - castleSize / 2
                         let trackWidth = castleX - trackLeft
                         let actorMinX = trackLeft + actorSize / 2
-                        let actorMaxX = castleX - actorSize / 2 - 6
+                        let actorMaxX = castleX
                         let actorCenterX = actorMinX + (actorMaxX - actorMinX) * prog
                         let filledWidth = max(0, actorCenterX - trackLeft)
                         let lineY: CGFloat = 56
@@ -60,7 +60,7 @@ struct StorylineCardView<Content: View>: View {
                             Capsule()
                                 .fill(Color(red: 0.87, green: 0.89, blue: 0.85))
                                 .frame(width: trackWidth, height: lineHeight)
-                                .position(x: trackGeo.size.width / 2 - padding / 2, y: lineY)
+                                .position(x: trackLeft + trackWidth / 2, y: lineY)
 
                             Capsule()
                                 .fill(progressColor)
