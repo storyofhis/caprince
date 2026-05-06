@@ -38,7 +38,7 @@ struct OnboardingComponent: View {
             let titleString: AttributedString = {
                 var combined = AttributedString(page.titleNormal + page.titleHighlight)
                 
-                combined.font = .system(size: 28, weight: .bold, design: .rounded)
+                combined.font = .system(size: 30, weight: .bold, design: .rounded)
                 combined.foregroundColor = .black
                 
                 if let range = combined.range(of: page.titleHighlight) {
@@ -51,11 +51,10 @@ struct OnboardingComponent: View {
                 .multilineTextAlignment(.center)
             
             Text(page.description)
-                .font(.system(size: 15, design: .rounded))
+                .font(.system(size: 20, design: .rounded))
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
         }
     }
 }
-

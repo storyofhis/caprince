@@ -27,10 +27,158 @@ struct mainPageView: View {
     var body: some View {
         ZStack {
             ScrollView {
-                VStack(spacing: 20){
-                    
-                    // Workout Plan
+                VStack(spacing: 48) {
+                    // Top Section: Progress + Grid (Closer together)
+                    VStack(spacing: 16) {
+                        // Storyline/Widget
                     VStack(alignment: .leading){
+                        Text("Your Progress")
+                            .font(Font.title2.bold())
+                            .foregroundStyle(Color(red: 0.39, green: 0.31, blue: 0.23))
+                        
+                        StorylineCardView(progress: stats?.programProgress ?? 0)
+                    }
+                    
+                    // Grid
+                    VStack{
+                        // Top row
+                        HStack(spacing: 16) {
+                            // Steps
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color("Brown-300"))
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 91)
+                                .overlay(alignment: .bottomTrailing) {
+                                    Image("WR-Steps")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(height: 60)
+                                        .offset(x: 10, y: 5)
+                                }
+                                .overlay(alignment: .topLeading) {
+                                    VStack(alignment: .leading, spacing: 0) {
+                                        Text("Steps")
+                                            .font(.title3.bold())
+                                            .foregroundStyle(.white)
+                                        
+                                        Spacer()
+                                        
+                                        Text("\(Int(healthKit.stepCount))")
+                                            .font(.system(size: 32, weight: .bold))
+                                            .foregroundColor(.white)
+                                    }
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 12)
+                                }
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                            
+                            // Avg Pace
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color("Brown-500"))
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 91)
+                                .overlay(alignment: .bottomTrailing) {
+                                    Circle()
+                                        .fill(Color(red: 0.64, green: 0.74, blue: 0.55))
+                                        .frame(width: 60, height: 60)
+                                        .blur(radius: 15)
+                                        .offset(x: 20, y: 20)
+                                }
+                                .overlay(alignment: .topLeading) {
+                                    VStack(alignment: .leading, spacing: 0) {
+                                        Text("Avg. Pace")
+                                            .font(.title3.bold())
+                                            .foregroundStyle(.white)
+                                        
+                                        Spacer()
+                                        
+                                        Text(stats?.formattedAveragePace ?? "00:00")
+                                            .font(.system(size: 32, weight: .bold))
+                                            .foregroundColor(.white)
+                                    }
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 12)
+                                }
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
+                        
+                        // Bottom row
+                        HStack(spacing: 16) {
+                            // Calories
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color("Brown-500"))
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 91)
+                                .overlay(alignment: .bottomTrailing) {
+                                    Image("WR-Calories")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(height: 45)
+                                        .offset(x: 0, y: 5)
+                                }
+                                .overlay(alignment: .topLeading) {
+                                    VStack(alignment: .leading, spacing: 0) {
+                                        Text("Calorie")
+                                            .font(.title3.bold())
+                                            .foregroundStyle(.white)
+                                        
+                                        Spacer()
+                                        
+                                        HStack(alignment: .lastTextBaseline, spacing: 4) {
+                                            Text(String(format: "%.0f", healthKit.caloriesBurned))
+                                                .font(.system(size: 32, weight: .bold))
+                                                .foregroundColor(.white)
+                                            
+                                            Text("Kcal")
+                                                .font(.system(size: 12, weight: .semibold))
+                                                .foregroundColor(.white)
+                                        }
+                                    }
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 12)
+                                }
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                            
+                            // Running Distance
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color("Brown-300"))
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 91)
+                                .overlay(alignment: .bottomTrailing) {
+                                    Image("WR-Running")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(height: 70)
+                                        .offset(x: 5, y: 5)
+                                }
+                                .overlay(alignment: .topLeading) {
+                                    VStack(alignment: .leading, spacing: 0) {
+                                        Text("Distance")
+                                            .font(.title3.bold())
+                                            .foregroundStyle(.white)
+                                        
+                                        Spacer()
+                                        
+                                        HStack(alignment: .lastTextBaseline, spacing: 4) {
+                                            Text(String(format: "%.0f", stats?.totalDistanceKm ?? 0))
+                                                .font(.system(size: 32, weight: .bold))
+                                                .foregroundColor(.white)
+                                            
+                                            Text("Km")
+                                                .font(.system(size: 12, weight: .semibold))
+                                                .foregroundColor(.white)
+                                        }
+                                    }
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 12)
+                                }
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
+                    }
+                }
+                
+                // Workout Plan
+                VStack(alignment: .leading){
                         // Title + Including view all
                         HStack {
                             Text("Workout Plan")
@@ -52,178 +200,9 @@ struct mainPageView: View {
                         }
                     }
                     
-                    // Storyline/Widget
-                    VStack(alignment: .leading){
-                        Text("Your Progress")
-                            .font(Font.title2.bold())
-                            .foregroundStyle(Color(red: 0.39, green: 0.31, blue: 0.23))
-                        
-                        StorylineCardView(progress: stats?.programProgress ?? 0)
-                    }
-                    
-                    // Weekly Report
-                    VStack(alignment: .leading){
-                        Text("Weekly Report")
-                            .font(Font.title2.bold())
-                            .foregroundStyle(Color(red: 0.39, green: 0.31, blue: 0.23))
-                        
-                        // Grid
-                        VStack{
-                            // Top row
-                            HStack{
-                                // Steps
-                                // TODO: Nanti ganti foregroundstyle dengan fill kalau udah ad warnanya di asset!!
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(
-                                        // original green gradient
-//                                        LinearGradient(
-//                                            stops: [
-//                                                Gradient.Stop(color: Color(red: 0.37, green: 0.44, blue: 0.32), location: 0.28),
-//                                                Gradient.Stop(color: Color(red: 0.71, green: 0.84, blue: 0.62), location: 1.00),
-//                                            ],
-//                                            startPoint: UnitPoint(x: 0, y: 0.5),
-//                                            endPoint: UnitPoint(x: 1.06, y: 0.5)
-//                                        )
-                                        Color("Brown-300")
-                                    )
-                                    .frame(width: 198, height: 130)
-                                    .overlay(alignment: .bottomTrailing) {
-                                        Image("WR-Steps")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(height: 90)
-                                            .offset(x: 8, y: 10)
-                                    }
-                                    .overlay(
-                                        VStack(alignment: .leading, spacing: 34) {
-                                            Text("Steps")
-                                                .font(.title3)
-                                                .fontWeight(.semibold)
-                                                .foregroundStyle(.white)
-                                            
-                                            HStack(alignment: .lastTextBaseline) {
-                                                Text("\(Int(healthKit.stepCount))")
-                                                    .font(.title)
-                                                    .fontWeight(.bold)
-                                                    .foregroundColor(.white)
-                                                
-                                                Text("Steps")
-                                                    .font(.caption)
-                                                    .foregroundColor(.white)
-                                            }
-                                        }
-                                            .padding()
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                    )
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                
-                                // Avg Pace
-                                RoundedRectangle(cornerRadius: 10)
-                                    .foregroundStyle(Color("Brown-500"))
-                                    .frame(width: 110, height: 130)
-                                    .overlay(alignment: .bottom) {
-                                        Circle()
-                                            .fill(Color(red: 0.64, green: 0.74, blue: 0.55))
-                                            .frame(width: 80, height: 80)
-                                            .blur(radius: 20)
-                                            .offset(y: 40)
-                                    }
-                                    .overlay(
-                                        VStack(spacing: 4) {
-                                            Text("Avg Pace")
-                                                .font(.title3)
-                                                .fontWeight(.semibold)
-                                                .foregroundStyle(.white)
-                                            
-                                            Text(stats?.formattedAveragePace ?? "--:--")
-                                                .font(.title2)
-                                                .fontWeight(.bold)
-                                                .foregroundColor(.white)
-                                            
-                                            Text("/km")
-                                                .font(.caption)
-                                                .foregroundColor(.white.opacity(0.7))
-                                        }
-                                        .padding()
-                                    )
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                            }
-                            
-                            // Bottom row
-                            HStack {
-                                // Calories
-                                RoundedRectangle(cornerRadius: 10)
-                                    .foregroundStyle(Color("Brown-500"))
-                                    .frame(width: 154, height: 130)
-                                    .overlay(alignment: .bottomTrailing) {
-                                        Image("WR-Calories")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(height: 50)
-                                            .offset(x: 0, y: 2)
-                                    }
-                                    .overlay(
-                                        VStack(alignment: .leading, spacing: 34) {
-                                            Text("Calories")
-                                                .font(.title3)
-                                                .fontWeight(.semibold)
-                                                .foregroundStyle(.white)
-                                            
-                                            HStack(alignment: .lastTextBaseline) {
-                                                Text(String(format: "%.0f", healthKit.caloriesBurned))
-                                                    .font(.title)
-                                                    .fontWeight(.bold)
-                                                    .foregroundColor(.white)
-                                                
-                                                Text("Kcal")
-                                                    .font(.caption)
-                                                    .foregroundColor(.white)
-                                            }
-                                        }
-                                            .padding()
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                    )
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                
-                                // Running Distance
-                                RoundedRectangle(cornerRadius: 10)
-                                    .foregroundStyle(Color("Brown-300"))
-                                    .frame(width: 154, height: 130)
-                                    .overlay(alignment: .bottomTrailing) {
-                                        Image("WR-Running")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(height: 100)
-                                            .offset(x: 2, y: 10)
-                                    }
-                                    .overlay(
-                                        VStack(alignment: .leading, spacing: 34) {
-                                            Text("Distance")
-                                                .font(.title3)
-                                                .fontWeight(.semibold)
-                                                .foregroundStyle(.white)
-                                            
-                                            HStack(alignment: .lastTextBaseline) {
-                                                Text(String(format: "%.1f", stats?.totalDistanceKm ?? 0))
-                                                    .font(.title)
-                                                    .fontWeight(.bold)
-                                                    .foregroundColor(.white)
-                                                
-                                                Text("Km")
-                                                    .font(.caption)
-                                                    .foregroundColor(.white)
-                                            }
-                                        }
-                                            .padding()
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                    )
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                            }
-                        }
-                    }
-                    
                 }
-                .padding(38)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 20)
             } // Closes ScrollView
             .onAppear {
                 healthKit.requestAuthorization()
