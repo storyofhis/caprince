@@ -30,30 +30,28 @@ struct ActiveWeekCardView: View {
                         ZStack {
                             Circle()
                                 .fill(isExpanded ? Color("Brown-600") : Color.gray.opacity(0.2))
-                                .frame(width: isExpanded ? 64 : 48, height: isExpanded ? 64 : 48)
+                                .frame(width: 56, height: 56)
                             
                             if day.isCompleted {
                                 Image(systemName: "checkmark")
-                                    .font(isExpanded ? .title2.bold() : .headline.bold())
+                                    .font(.title2.bold())
                                     .foregroundStyle(isExpanded ? .white : Color("Brown-600"))
                             } else {
                                 Text("\(index + 1)")
-                                    .font(isExpanded ? .title.bold() : .title2.bold())
+                                    .font(.title2.bold())
                                     .foregroundStyle(isExpanded ? .white : .white)
                             }
                         }
                         .shadow(color: isExpanded ? Color("Brown-600").opacity(0.4) : .clear, radius: 6, x: 0, y: 3)
-                        .padding(.top, isExpanded ? 0 : 8) // Push down smaller circles slightly to center them relatively
                         
                         // Bottom line
                         if index < sortedDays.count - 1 {
                             Rectangle()
                                 .fill(Color("Brown-300").opacity(0.5))
-                                .frame(width: 3, height: isExpanded ? 50 : 30)
-                                .padding(.top, 4)
-                                .padding(.bottom, 4)
+                                .frame(width: 3) // Flexible height to perfectly connect to the next circle
                         }
                     }
+                    .frame(width: 60)
                     
                     // Card
                     VStack(alignment: .leading, spacing: 8) {
@@ -82,7 +80,7 @@ struct ActiveWeekCardView: View {
                     .background(isExpanded ? Color(red: 1, green: 0.98, blue: 0.88) : Color.gray.opacity(0.15))
                     .cornerRadius(12)
                     .shadow(color: isExpanded ? Color.black.opacity(0.1) : .clear, radius: 5, x: 0, y: 3)
-                    .padding(.bottom, index < sortedDays.count - 1 ? 0 : 16)
+                    .padding(.bottom, 24) // Adds vertical space between cards, stretching the HStack so the Rectangle bridges the gap
                     .onTapGesture {
                         withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                             if expandedDayId == day.id {
