@@ -24,17 +24,12 @@ struct StorylineCardView<Content: View>: View {
             geometry in
             // Geometry reader for flexibility in progress bar
             ZStack {
-                // Background Gradient
-                RoundedRectangle(cornerRadius: 30)
-                    .fill(
-                        LinearGradient(
-                            stops: [
-                                Gradient.Stop(color: Color(red: 1, green: 0.98, blue: 0.88), location: 0.00),
-                                Gradient.Stop(color: Color(red: 0.64, green: 0.74, blue: 0.55), location: 1.00),
-                            ],
-                            startPoint: UnitPoint(x: 0.5, y: 0.71),
-                            endPoint: UnitPoint(x: 0.5, y: 1)
-                        )
+                // Background
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(Color("Brown-300"), lineWidth: 2)
                     )
                 // Content
                 VStack {
@@ -42,19 +37,19 @@ struct StorylineCardView<Content: View>: View {
                     illustration
                     
                     GeometryReader { trackGeo in
-                        let padding: CGFloat = 24
-                        let actorSize: CGFloat = 48
-                        let castleSize: CGFloat = 60
-                        let lineHeight: CGFloat = 10
+                        let padding: CGFloat = 30
+                        let actorSize: CGFloat = 80
+                        let castleSize: CGFloat = 80
+                        let lineHeight: CGFloat = 14
                         let prog = max(0, min(1, progress))
                         let trackLeft = padding
-                        let castleX = trackGeo.size.width - padding - castleSize / 2
+                        let castleX = trackGeo.size.width - padding - castleSize / 4
                         let trackWidth = castleX - trackLeft
                         let actorMinX = trackLeft + actorSize / 2
-                        let actorMaxX = castleX
+                        let actorMaxX = castleX - castleSize / 3
                         let actorCenterX = actorMinX + (actorMaxX - actorMinX) * prog
                         let filledWidth = max(0, actorCenterX - trackLeft)
-                        let lineY: CGFloat = 56
+                        let lineY: CGFloat = 75
 
                         ZStack(alignment: .leading) {
                             Capsule()
@@ -72,34 +67,21 @@ struct StorylineCardView<Content: View>: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: castleSize, height: castleSize)
-                                .position(x: castleX, y: lineY - 25)
+                                .position(x: castleX, y: lineY - 40)
 
                             Image("actorWidget")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: actorSize, height: actorSize)
-                                .position(x: actorCenterX, y: lineY - 4)
+                                .position(x: actorCenterX, y: lineY - 30)
                                 .animation(.easeInOut(duration: 0.5), value: progress)
                         }
                     }
-                    .frame(height: 110)
-
-//                    HStack {
-//                        ForEach(1...totalSteps, id: \.self) { step in
-//                            Text("\(step)")
-//                                .font(.caption)
-//                                .fontWeight(.semibold)
-//                                .foregroundStyle(Color(red: 0.39, green: 0.31, blue: 0.23))
-//                                .frame(maxWidth: .infinity)
-//                        }
-//                    }
-//                    .padding(.horizontal, 24)
+                    .frame(height: 90)
                 }
-                .padding(.bottom, 20)
             }
         }
-        // maintains the aspect ratio automatically
-        .aspectRatio(2.0, contentMode: .fit)
+        .frame(height: 100)
     }
 }
 
