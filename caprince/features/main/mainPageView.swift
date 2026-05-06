@@ -188,9 +188,13 @@ struct mainPageView: View {
                             Spacer()
                             
                             NavigationLink(destination: ViewAllWeeks()){
-                                Text("View All Workouts")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
+                                Text("All Workout")
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 8)
+                                    .background(Color("Brown-500"))
+                                    .clipShape(Capsule())
                             }
                         }
                         

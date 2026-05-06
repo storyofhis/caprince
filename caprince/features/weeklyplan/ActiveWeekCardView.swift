@@ -20,6 +20,12 @@ struct ActiveWeekCardView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            Text(week.title)
+                .font(.title3.bold())
+                .foregroundStyle(Color("Brown-600"))
+                .padding(.horizontal, 8)
+                .padding(.bottom, 24)
+            
             ForEach(Array(sortedDays.enumerated()), id: \.element.id) { index, day in
                 let isExpanded = expandedDayId == day.id
                 
