@@ -15,14 +15,13 @@ struct ActiveRunView: View {
     @State private var timerManager = WorkoutTimerManager()
     @State private var currentFrame = 1
     @State private var spriteTimer: Timer? = nil
-    @State private var showRestartConfirm = false
     @State private var showFinishConfirm = false
     
     var body: some View {
         ZStack(alignment: .bottom) {
             // Background Layer
             if viewModel.isMaximized {
-                Color(.white).ignoresSafeArea()
+                Color.white.ignoresSafeArea()
             } else {
                 MapComponent(coordinates: $viewModel.coordinates, cameraPosition: $viewModel.cameraPosition)
                     .ignoresSafeArea()
@@ -71,9 +70,36 @@ struct ActiveRunView: View {
                     minimizedCard
                 }
             }
+            
+            // MARK: - Center Confirmation Overlay
+            if showFinishConfirm {
+                ZStack {
+                    Color.black.opacity(0.25)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            withAnimation {
+                                showFinishConfirm = false
+                            }
+                        }
+                    
+                    confirmationCard(
+                        title: "Finish workout?",
+                        message: "Are you sure you want to end your run?",
+                        actionLabel: "Finish",
+                        action: {
+                            showFinishConfirm = false
+                            viewModel.stopSession()
+                        },
+                        cancel: { showFinishConfirm = false }
+                    )
+                    .transition(.scale(scale: 0.9).combined(with: .opacity))
+                }
+                .zIndex(10) // Ensure it's on top
+            }
         }
-        .animation(.spring(), value: viewModel.isMaximized)
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: viewModel.isMaximized)
         .animation(.easeInOut, value: viewModel.sessionState)
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: showFinishConfirm)
         .onAppear {
             if let day = trainingDay {
                 timerManager.loadSteps(day.steps)
@@ -262,49 +288,7 @@ struct ActiveRunView: View {
                     .frame(maxWidth: .infinity)
                 }
             }
-            
-            // MARK: - Confirmation Overlays
-            if showRestartConfirm || showFinishConfirm {
-                Color.black.opacity(0.15)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation {
-                            showRestartConfirm = false
-                            showFinishConfirm = false
-                        }
-                    }
-            }
-            
-            if showRestartConfirm {
-                confirmationCard(
-                    title: "Restart workout?",
-                    message: "Are you sure you want to restart?",
-                    actionLabel: "Restart",
-                    action: {
-                        showRestartConfirm = false
-                        viewModel.resetSession()
-                    },
-                    cancel: { showRestartConfirm = false }
-                )
-                .transition(.scale(scale: 0.9).combined(with: .opacity))
-            }
-            
-            if showFinishConfirm {
-                confirmationCard(
-                    title: "Finish workout?",
-                    message: "Are you sure you want to end your run?",
-                    actionLabel: "Finish",
-                    action: {
-                        showFinishConfirm = false
-                        viewModel.stopSession()
-                    },
-                    cancel: { showFinishConfirm = false }
-                )
-                .transition(.scale(scale: 0.9).combined(with: .opacity))
-            }
         }
-        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: showRestartConfirm)
-        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: showFinishConfirm)
     }
     
     // MARK: - Confirmation Pop-out Card (Figma spec)
@@ -459,8 +443,12 @@ struct ActiveRunView: View {
                         }
                     }
                     
-                    // Stop button
-                    Button(action: { viewModel.stopSession() }) {
+                    // Stop button → Finish confirm
+                    Button(action: {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                            showFinishConfirm = true
+                        }
+                    }) {
                         Image(systemName: "stop.fill")
                             .font(.title2)
                             .foregroundColor(.white)
