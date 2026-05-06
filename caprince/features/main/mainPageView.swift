@@ -9,11 +9,13 @@
 
 import SwiftUI
 import SwiftData
+import HealthKit
 
 struct mainPageView: View {
     @Query(sort: \TrainingWeek.title) var weeks: [TrainingWeek]
     @Query var userStatsQuery: [UserStats]
     @State private var popupState: WorkoutPopupState? = nil
+    @StateObject private var healthKit = HealthKitManager.shared
     
     // Safely access the single UserStats singleton
     var stats: UserStats? { userStatsQuery.first }
@@ -100,7 +102,7 @@ struct mainPageView: View {
                                                 .foregroundStyle(.white)
                                             
                                             HStack(alignment: .lastTextBaseline) {
-                                                Text("3978")
+                                                Text("\(Int(healthKit.stepCount))")
                                                     .font(.title)
                                                     .fontWeight(.bold)
                                                     .foregroundColor(.white)
@@ -168,7 +170,7 @@ struct mainPageView: View {
                                                 .foregroundStyle(.white)
                                             
                                             HStack(alignment: .lastTextBaseline) {
-                                                Text(String(format: "%.0f", stats?.totalCaloriesBurned ?? 0))
+                                                Text(String(format: "%.0f", healthKit.caloriesBurned))
                                                     .font(.title)
                                                     .fontWeight(.bold)
                                                     .foregroundColor(.white)
@@ -223,6 +225,9 @@ struct mainPageView: View {
                 }
                 .padding(38)
             } // Closes ScrollView
+            .onAppear {
+                healthKit.requestAuthorization()
+            }
             
             // Custom Popup Overlay
             if let state = popupState {

@@ -108,26 +108,17 @@ struct WorkoutDetailSheet: View {
                             .clipShape(Capsule())
                             .padding(.horizontal, 28)
                     } else if isAvailable {
-                        VStack(spacing: 10) {
-                            Button(action: { onStart() }) {
-                                Text("Go!")
-                                    .font(.headline)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.white)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 16)
-                                    .background(Color(red: 0.39, green: 0.31, blue: 0.23))
-                                    .clipShape(Capsule())
-                            }
-                            .padding(.horizontal, 28)
-
-                            // Dev shortcut — Mark as Done
-                            Button(action: { onMarkDone() }) {
-                                Text("Mark as Done")
-                                    .font(.caption)
-                                    .foregroundColor(Color(red: 0.55, green: 0.45, blue: 0.35))
-                            }
+                        Button(action: { onStart() }) {
+                            Text("Go!")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 16)
+                                .background(Color(red: 0.39, green: 0.31, blue: 0.23))
+                                .clipShape(Capsule())
                         }
+                        .padding(.horizontal, 28)
                     } else {
                         Text("🔒 Locked")
                             .font(.subheadline)
