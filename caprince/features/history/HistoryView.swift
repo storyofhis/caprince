@@ -46,6 +46,7 @@ struct HistoryView: View {
                     }
                 }
             }
+            .navigationBarBackButtonHidden(true)
         }
     }
     

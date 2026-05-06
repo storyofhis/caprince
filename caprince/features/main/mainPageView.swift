@@ -18,9 +18,6 @@ struct mainPageView: View {
     // Safely access the single UserStats singleton
     var stats: UserStats? { userStatsQuery.first }
     
-    /// The currently active week:
-    /// - The first week that is not fully completed (not all 3 days done)
-    /// - Falls back to the last week if everything is completed
     var activeWeek: TrainingWeek? {
         weeks.first(where: { !$0.days.allSatisfy { $0.isCompleted } }) ?? weeks.last
     }
@@ -29,16 +26,6 @@ struct mainPageView: View {
         ZStack {
             ScrollView {
                 VStack(spacing: 20){
-                    
-                    // Storyline/Widget
-                    VStack(alignment: .leading){
-                        Text("Your Progress")
-                            .font(Font.title2.bold())
-                            .foregroundStyle(Color(red: 0.39, green: 0.31, blue: 0.23))
-                        
-                        StorylineCardView(progress: stats?.programProgress ?? 0)
-                    }
-                    
                     
                     // Workout Plan
                     VStack(alignment: .leading){
@@ -61,6 +48,15 @@ struct mainPageView: View {
                         if let currentWeek = activeWeek {
                             WeekCardView(week: currentWeek, popupState: $popupState)
                         }
+                    }
+                    
+                    // Storyline/Widget
+                    VStack(alignment: .leading){
+                        Text("Your Progress")
+                            .font(Font.title2.bold())
+                            .foregroundStyle(Color(red: 0.39, green: 0.31, blue: 0.23))
+                        
+                        StorylineCardView(progress: stats?.programProgress ?? 0)
                     }
                     
                     // Weekly Report

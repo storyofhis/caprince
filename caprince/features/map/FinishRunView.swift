@@ -147,6 +147,7 @@ struct FinishRunView: View {
             }
         }
         .ignoresSafeArea()
+        .navigationBarHidden(true)
     }
 }
 
