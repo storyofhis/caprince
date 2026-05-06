@@ -48,7 +48,7 @@ struct mainPageView: View {
                         
                         // Week card view — shows the current active week
                         if let currentWeek = activeWeek {
-                            WeekCardView(week: currentWeek, popupState: $popupState)
+                            ActiveWeekCardView(week: currentWeek, popupState: $popupState)
                         }
                     }
                     
