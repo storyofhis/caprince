@@ -60,19 +60,20 @@ struct ActiveWeekCardView: View {
                             .foregroundStyle(isExpanded ? Color("Brown-600") : .gray)
                         
                         if isExpanded {
-                            HStack {
+                            HStack(spacing: 12) {
                                 ForEach(extractTags(from: day.duration), id: \.text) { tag in
-                                    Text(tag.text.capitalized)
-                                        .font(.caption)
-                                        .foregroundStyle(.primary)
-                                        .padding(.horizontal, 10)
-                                        .padding(.vertical, 4)
+                                    Text(tag.text)
+                                        .font(.system(size: 14, weight: .regular))
+                                        .foregroundStyle(Color.black.opacity(0.8))
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
                                         .background(
                                             Capsule()
                                                 .stroke(tag.color, lineWidth: 1)
                                         )
                                 }
                             }
+                            .padding(.top, 8)
                         }
                     }
                     .padding()
